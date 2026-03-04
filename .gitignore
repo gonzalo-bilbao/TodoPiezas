@@ -1,0 +1,48 @@
+# Flutter & Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+/build/
+/coverage/
+.flutter-plugins
+.flutter-plugins-dependencies
+.incremental/
+.generated/
+
+# Android
+.gradle/
+/android/app/debug
+/android/app/profile
+/android/app/release
+/android/local.properties
+/android/key.properties
+*.keystore
+*.jks
+
+# iOS
+*.podspec
+.last_build_id
+/ios/Pods/
+/ios/Flutter/.last_build_id
+/ios/Flutter/Generated.xcconfig
+/ios/Flutter/flutter_export_environment.sh
+
+# Backend (PHP / API)
+/api/config.php
+/api/vendor/
+.env
+composer.lock
+error_log
+
+# Database (MySQL)
+*.sql.gz
+*.sql.zip
+/db/temp_backups/
+
+# IDEs & OS
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
