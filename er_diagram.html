@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>TodoPiezas – Diagrama E/R</title>
+<style>
+  @media print {
+    .no-print { display: none; }
+    body { margin: 0; background: white; }
+  }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #eef0f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px;
+    margin: 0;
+  }
+  h1 { font-size: 21px; color: #1A1A2E; margin-bottom: 2px; }
+  p.sub { color: #999; font-size: 13px; margin-bottom: 18px; }
+  button {
+    background: #E85D04; color: white; border: none;
+    padding: 11px 26px; border-radius: 8px; font-size: 14px;
+    font-weight: 700; cursor: pointer; margin-bottom: 22px;
+  }
+  .wrap { background: white; border-radius: 14px; padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,.10); }
+</style>
+</head>
+<body>
+
+<h1>🗄️ Diagrama Entidad-Relación · TodoPiezas</h1>
+<p class="sub">TFG · Gonzalo Bilbao · Vicente Mena · Alberto Luque · 2026</p>
+<button class="no-print" onclick="window.print()">🖨️ Guardar como PDF</button>
+
+<div class="wrap">
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="660" font-family="'Segoe UI',sans-serif" font-size="12.5">
+
+  <defs>
+    <marker id="arr" markerWidth="9" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,9 3.5,0 7" fill="#555"/>
+    </marker>
+    <filter id="sh"><feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,.10)"/></filter>
+  </defs>
+
+  <!-- helper: línea separadora -->
+
+  <!-- ══════════════════════════════════════════════
+       DESGUACES  (top-left)
+  ══════════════════════════════════════════════ -->
+  <rect x="40" y="40" width="230" height="290" rx="10" fill="white" stroke="#1565c0" stroke-width="2" filter="url(#sh)"/>
+  <rect x="40" y="40" width="230" height="36" rx="10" fill="#1565c0"/>
+  <rect x="40" y="66" width="230" height="10" fill="#1565c0"/>
+  <text x="155" y="63" text-anchor="middle" fill="white" font-size="14" font-weight="700">DESGUACES</text>
+
+  <!-- PK -->
+  <rect x="40" y="76" width="230" height="26" fill="#fff8f0"/>
+  <text x="60" y="93" fill="#E85D04" font-weight="700">PK</text>
+  <text x="84" y="93" fill="#222" font-weight="600">id</text>
+  <text x="263" y="93" text-anchor="end" fill="#888">INT AUTO_INCREMENT</text>
+  <line x1="40" y1="102" x2="270" y2="102" stroke="#eee"/>
+
+  <text x="60" y="120" fill="#333">nombre</text>      <text x="263" y="120" text-anchor="end" fill="#999">VARCHAR(100)</text>
+  <line x1="40" y1="128" x2="270" y2="128" stroke="#eee"/>
+  <text x="60" y="146" fill="#333">direccion</text>   <text x="263" y="146" text-anchor="end" fill="#999">VARCHAR(200)</text>
+  <line x1="40" y1="154" x2="270" y2="154" stroke="#eee"/>
+  <text x="60" y="172" fill="#333">telefono</text>    <text x="263" y="172" text-anchor="end" fill="#999">VARCHAR(20)</text>
+  <line x1="40" y1="180" x2="270" y2="180" stroke="#eee"/>
+  <text x="60" y="198" fill="#333">email</text>       <text x="263" y="198" text-anchor="end" fill="#999">VARCHAR(100) UQ</text>
+  <line x1="40" y1="206" x2="270" y2="206" stroke="#eee"/>
+  <text x="60" y="224" fill="#333">password</text>    <text x="263" y="224" text-anchor="end" fill="#999">VARCHAR(255)</text>
+  <line x1="40" y1="232" x2="270" y2="232" stroke="#eee"/>
+  <text x="60" y="250" fill="#333">lat / lng</text>   <text x="263" y="250" text-anchor="end" fill="#999">DECIMAL(10,8)</text>
+  <line x1="40" y1="258" x2="270" y2="258" stroke="#eee"/>
+  <text x="60" y="276" fill="#333">horario</text>     <text x="263" y="276" text-anchor="end" fill="#999">VARCHAR(100)</text>
+  <line x1="40" y1="284" x2="270" y2="284" stroke="#eee"/>
+  <text x="60" y="302" fill="#aaa" font-style="italic">created_at</text><text x="263" y="302" text-anchor="end" fill="#ccc">TIMESTAMP</text>
+
+  <!-- ══════════════════════════════════════════════
+       USUARIOS  (top-right)
+  ══════════════════════════════════════════════ -->
+  <rect x="650" y="40" width="230" height="220" rx="10" fill="white" stroke="#6a1b9a" stroke-width="2" filter="url(#sh)"/>
+  <rect x="650" y="40" width="230" height="36" rx="10" fill="#6a1b9a"/>
+  <rect x="650" y="66" width="230" height="10" fill="#6a1b9a"/>
+  <text x="765" y="63" text-anchor="middle" fill="white" font-size="14" font-weight="700">USUARIOS</text>
+
+  <rect x="650" y="76" width="230" height="26" fill="#fff8f0"/>
+  <text x="670" y="93" fill="#E85D04" font-weight="700">PK</text>
+  <text x="694" y="93" fill="#222" font-weight="600">id</text>
+  <text x="873" y="93" text-anchor="end" fill="#888">INT AUTO_INCREMENT</text>
+  <line x1="650" y1="102" x2="880" y2="102" stroke="#eee"/>
+
+  <text x="670" y="120" fill="#333">nombre</text>    <text x="873" y="120" text-anchor="end" fill="#999">VARCHAR(100)</text>
+  <line x1="650" y1="128" x2="880" y2="128" stroke="#eee"/>
+  <text x="670" y="146" fill="#333">email</text>     <text x="873" y="146" text-anchor="end" fill="#999">VARCHAR(100) UQ</text>
+  <line x1="650" y1="154" x2="880" y2="154" stroke="#eee"/>
+  <text x="670" y="172" fill="#333">password</text>  <text x="873" y="172" text-anchor="end" fill="#999">VARCHAR(255)</text>
+  <line x1="650" y1="180" x2="880" y2="180" stroke="#eee"/>
+  <text x="670" y="198" fill="#333">telefono</text>  <text x="873" y="198" text-anchor="end" fill="#999">VARCHAR(20)</text>
+  <line x1="650" y1="206" x2="880" y2="206" stroke="#eee"/>
+  <text x="670" y="224" fill="#aaa" font-style="italic">created_at</text><text x="873" y="224" text-anchor="end" fill="#ccc">TIMESTAMP</text>
+
+  <!-- ══════════════════════════════════════════════
+       PIEZAS  (center)
+  ══════════════════════════════════════════════ -->
+  <rect x="335" y="40" width="250" height="398" rx="10" fill="white" stroke="#E85D04" stroke-width="2.5" filter="url(#sh)"/>
+  <rect x="335" y="40" width="250" height="36" rx="10" fill="#E85D04"/>
+  <rect x="335" y="66" width="250" height="10" fill="#E85D04"/>
+  <text x="460" y="63" text-anchor="middle" fill="white" font-size="15" font-weight="700">PIEZAS</text>
+
+  <rect x="335" y="76" width="250" height="26" fill="#fff8f0"/>
+  <text x="355" y="93" fill="#E85D04" font-weight="700">PK</text>
+  <text x="379" y="93" fill="#222" font-weight="600">id</text>
+  <text x="578" y="93" text-anchor="end" fill="#888">INT AUTO_INCREMENT</text>
+  <line x1="335" y1="102" x2="585" y2="102" stroke="#eee"/>
+
+  <text x="355" y="120" fill="#333">nombre</text>      <text x="578" y="120" text-anchor="end" fill="#999">VARCHAR(100)</text>
+  <line x1="335" y1="128" x2="585" y2="128" stroke="#eee"/>
+  <text x="355" y="146" fill="#333">descripcion</text>  <text x="578" y="146" text-anchor="end" fill="#999">TEXT</text>
+  <line x1="335" y1="154" x2="585" y2="154" stroke="#eee"/>
+  <text x="355" y="172" fill="#333">precio</text>       <text x="578" y="172" text-anchor="end" fill="#999">DECIMAL(10,2)</text>
+  <line x1="335" y1="180" x2="585" y2="180" stroke="#eee"/>
+  <text x="355" y="198" fill="#333">estado</text>       <text x="578" y="198" text-anchor="end" fill="#999">ENUM Nuevo/Usado</text>
+  <line x1="335" y1="206" x2="585" y2="206" stroke="#eee"/>
+  <text x="355" y="224" fill="#333">imagen</text>       <text x="578" y="224" text-anchor="end" fill="#999">VARCHAR(255)</text>
+  <line x1="335" y1="232" x2="585" y2="232" stroke="#eee"/>
+  <text x="355" y="250" fill="#333">color</text>        <text x="578" y="250" text-anchor="end" fill="#999">VARCHAR(50)</text>
+  <line x1="335" y1="258" x2="585" y2="258" stroke="#eee"/>
+  <text x="355" y="276" fill="#333">stock</text>        <text x="578" y="276" text-anchor="end" fill="#999">INT</text>
+  <line x1="335" y1="284" x2="585" y2="284" stroke="#eee"/>
+  <text x="355" y="302" fill="#333">categoria</text>    <text x="578" y="302" text-anchor="end" fill="#999">VARCHAR(50)</text>
+  <line x1="335" y1="310" x2="585" y2="310" stroke="#eee"/>
+  <text x="355" y="328" fill="#333">marca</text>        <text x="578" y="328" text-anchor="end" fill="#999">VARCHAR(50)</text>
+  <line x1="335" y1="336" x2="585" y2="336" stroke="#eee"/>
+  <text x="355" y="354" fill="#333">modelo</text>       <text x="578" y="354" text-anchor="end" fill="#999">VARCHAR(50)</text>
+  <line x1="335" y1="362" x2="585" y2="362" stroke="#eee"/>
+  <text x="355" y="380" fill="#333">anyo</text>         <text x="578" y="380" text-anchor="end" fill="#999">SMALLINT UNSIGNED</text>
+  <line x1="335" y1="388" x2="585" y2="388" stroke="#eee"/>
+  <!-- FK -->
+  <rect x="335" y="388" width="250" height="26" fill="#fff0f0"/>
+  <text x="355" y="405" fill="#c0392b" font-weight="700">FK</text>
+  <text x="379" y="405" fill="#222" font-weight="600">desguace_id</text>
+  <text x="578" y="405" text-anchor="end" fill="#999">INT → desguaces</text>
+  <line x1="335" y1="414" x2="585" y2="414" stroke="#eee"/>
+  <text x="355" y="430" fill="#aaa" font-style="italic">created_at</text><text x="578" y="430" text-anchor="end" fill="#ccc">TIMESTAMP</text>
+
+  <!-- ══════════════════════════════════════════════
+       PEDIDOS  (bottom-center)
+  ══════════════════════════════════════════════ -->
+  <rect x="335" y="510" width="250" height="130" rx="10" fill="white" stroke="#c62828" stroke-width="2" filter="url(#sh)"/>
+  <rect x="335" y="510" width="250" height="36" rx="10" fill="#c62828"/>
+  <rect x="335" y="536" width="250" height="10" fill="#c62828"/>
+  <text x="460" y="533" text-anchor="middle" fill="white" font-size="14" font-weight="700">PEDIDOS</text>
+
+  <rect x="335" y="546" width="250" height="26" fill="#fff8f0"/>
+  <text x="355" y="563" fill="#E85D04" font-weight="700">PK</text>
+  <text x="379" y="563" fill="#222" font-weight="600">id</text>
+  <text x="578" y="563" text-anchor="end" fill="#888">INT AUTO_INCREMENT</text>
+  <line x1="335" y1="572" x2="585" y2="572" stroke="#eee"/>
+
+  <rect x="335" y="572" width="250" height="22" fill="#fff0f0"/>
+  <text x="355" y="587" fill="#c0392b" font-weight="700">FK</text>
+  <text x="379" y="587" fill="#222" font-weight="600">usuario_id</text>
+  <text x="578" y="587" text-anchor="end" fill="#999">→ usuarios</text>
+  <line x1="335" y1="594" x2="585" y2="594" stroke="#eee"/>
+
+  <rect x="335" y="594" width="250" height="22" fill="#fff0f0"/>
+  <text x="355" y="609" fill="#c0392b" font-weight="700">FK</text>
+  <text x="379" y="609" fill="#222" font-weight="600">pieza_id</text>
+  <text x="578" y="609" text-anchor="end" fill="#999">→ piezas</text>
+  <line x1="335" y1="616" x2="585" y2="616" stroke="#eee"/>
+
+  <rect x="335" y="616" width="250" height="22" fill="#fff0f0"/>
+  <text x="355" y="631" fill="#c0392b" font-weight="700">FK</text>
+  <text x="379" y="631" fill="#222" font-weight="600">desguace_id</text>
+  <text x="578" y="631" text-anchor="end" fill="#999">→ desguaces</text>
+
+  <!-- ══════════════════════════════════════════════
+       RELACIONES
+  ══════════════════════════════════════════════ -->
+
+  <!-- desguaces 1 ──→ N piezas -->
+  <line x1="270" y1="185" x2="335" y2="350" stroke="#1565c0" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="266" y="170" width="18" height="18" rx="4" fill="#1565c0"/>
+  <text x="275" y="183" text-anchor="middle" fill="white" font-size="11" font-weight="800">1</text>
+  <rect x="314" y="344" width="18" height="18" rx="4" fill="#1565c0"/>
+  <text x="323" y="357" text-anchor="middle" fill="white" font-size="11" font-weight="800">N</text>
+  <text x="280" y="280" fill="#1565c0" font-size="11" font-weight="600" transform="rotate(-20,280,280)">tiene</text>
+
+  <!-- piezas 1 ──→ N pedidos -->
+  <line x1="460" y1="438" x2="460" y2="510" stroke="#c62828" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="449" y="436" width="18" height="18" rx="4" fill="#c62828"/>
+  <text x="458" y="449" text-anchor="middle" fill="white" font-size="11" font-weight="800">1</text>
+  <rect x="449" y="493" width="18" height="18" rx="4" fill="#c62828"/>
+  <text x="458" y="506" text-anchor="middle" fill="white" font-size="11" font-weight="800">N</text>
+  <text x="472" y="478" fill="#c62828" font-size="11" font-weight="600">genera</text>
+
+  <!-- usuarios 1 ──→ N pedidos -->
+  <path d="M765 260 Q765 590 585 590" stroke="#6a1b9a" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+  <rect x="754" y="256" width="18" height="18" rx="4" fill="#6a1b9a"/>
+  <text x="763" y="269" text-anchor="middle" fill="white" font-size="11" font-weight="800">1</text>
+  <rect x="568" y="582" width="18" height="18" rx="4" fill="#6a1b9a"/>
+  <text x="577" y="595" text-anchor="middle" fill="white" font-size="11" font-weight="800">N</text>
+  <text x="740" y="450" fill="#6a1b9a" font-size="11" font-weight="600">hace</text>
+
+  <!-- desguaces 1 ──→ N pedidos (línea punteada, relación indirecta) -->
+  <path d="M155 330 Q155 590 335 600" stroke="#1565c0" stroke-width="1.5" fill="none" stroke-dasharray="6,3" marker-end="url(#arr)"/>
+  <text x="140" y="480" fill="#1565c0" font-size="10" transform="rotate(-85,140,480)">recibe</text>
+
+  <!-- ══════════════════════════════════════════════
+       LEYENDA
+  ══════════════════════════════════════════════ -->
+  <rect x="40" y="630" width="840" height="26" rx="6" fill="#f4f4f8" stroke="#ddd" stroke-width="1"/>
+  <rect x="56" y="638" width="10" height="10" rx="2" fill="#E85D04" opacity="0.6"/>
+  <text x="72" y="649" fill="#555">PK = Clave primaria</text>
+  <rect x="196" y="638" width="10" height="10" rx="2" fill="#c0392b" opacity="0.6"/>
+  <text x="212" y="649" fill="#555">FK = Clave foránea (relación entre tablas)</text>
+  <text x="460" y="649" fill="#555">|  1:N = Un registro puede tener muchos relacionados</text>
+  <text x="740" y="649" fill="#555">|  MySQL 8.0+</text>
+
+</svg>
+</div>
+</body>
+</html>

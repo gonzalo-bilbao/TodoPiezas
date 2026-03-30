@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>TodoPiezas – Resumen del proyecto</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:#fff; color:#1a1a2e; font-size:14px; line-height:1.7; padding:40px; max-width:900px; margin:0 auto; }
+
+  /* Print styles */
+  @media print {
+    body { padding: 20px; font-size: 12px; }
+    .no-print { display: none; }
+    h2 { page-break-before: always; }
+    h2:first-of-type { page-break-before: avoid; }
+    pre { font-size: 10px; }
+    .page-break { page-break-before: always; }
+  }
+
+  /* Header */
+  .header { background: #1A1A2E; color: white; padding: 32px; border-radius: 16px; margin-bottom: 32px; display:flex; align-items:center; gap:24px; }
+  .header-logo { background:#E85D04; width:72px; height:72px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:38px; flex-shrink:0; }
+  .header h1 { font-size:28px; font-weight:800; }
+  .header h1 span { color:#E85D04; }
+  .header p { color:rgba(255,255,255,.6); font-size:13px; margin-top:4px; }
+
+  /* Print button */
+  .print-btn { background:#E85D04; color:white; border:none; padding:12px 28px; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; margin-bottom:28px; display:flex; align-items:center; gap:8px; }
+  .print-btn:hover { background:#d04e00; }
+
+  /* Sections */
+  h2 { font-size:20px; font-weight:800; color:#1A1A2E; margin:32px 0 14px; padding-bottom:8px; border-bottom:3px solid #E85D04; }
+  h3 { font-size:15px; font-weight:700; color:#1A1A2E; margin:18px 0 8px; }
+
+  /* Chat bubbles */
+  .msg { display:flex; gap:12px; margin-bottom:16px; }
+  .msg-user { flex-direction:row-reverse; }
+  .avatar { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; font-weight:700; }
+  .avatar-user { background:#E85D04; color:white; }
+  .avatar-ai { background:#1A1A2E; color:white; }
+  .bubble { max-width:75%; padding:12px 16px; border-radius:14px; font-size:13.5px; line-height:1.6; }
+  .bubble-user { background:#E85D04; color:white; border-bottom-right-radius:4px; }
+  .bubble-ai { background:#f4f4f8; color:#1a1a2e; border-bottom-left-radius:4px; }
+
+  /* Code blocks */
+  pre { background:#1a1a2e; color:#e2e8f0; padding:16px; border-radius:10px; font-family:'Fira Code',monospace; font-size:12px; overflow-x:auto; margin:10px 0; }
+  code { font-family:'Fira Code',monospace; background:#f0f0f5; padding:2px 6px; border-radius:4px; font-size:12px; color:#d04e00; }
+
+  /* File tree */
+  .tree { background:#f8f8fc; border:1.5px solid #e0e0ec; border-radius:10px; padding:16px; font-family:'Fira Code',monospace; font-size:12.5px; line-height:1.9; }
+  .tree .folder { color:#1A1A2E; font-weight:700; }
+  .tree .file { color:#555; }
+  .tree .new { color:#E85D04; font-weight:600; }
+  .tree .comment { color:#aaa; }
+
+  /* Tables */
+  table { width:100%; border-collapse:collapse; margin:12px 0; }
+  th { background:#1A1A2E; color:white; padding:10px 12px; font-size:13px; text-align:left; }
+  td { padding:9px 12px; border-bottom:1px solid #eee; font-size:13px; }
+  tr:nth-child(even) td { background:#f8f8fc; }
+
+  /* Badges */
+  .badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+  .badge-flutter { background:#e3f2fd; color:#1565c0; }
+  .badge-php { background:#f3e5f5; color:#6a1b9a; }
+  .badge-mysql { background:#e8f5e9; color:#2e7d32; }
+  .badge-done { background:#e8f5e9; color:#2e7d32; }
+
+  /* Person cards */
+  .team { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:16px 0; }
+  .person { background:#f8f8fc; border:1.5px solid #e0e0ec; border-radius:12px; padding:16px; }
+  .person-name { font-weight:800; font-size:15px; color:#1A1A2E; margin-bottom:4px; }
+  .person-role { font-size:12px; color:#E85D04; font-weight:600; margin-bottom:10px; }
+  .person ul { padding-left:16px; font-size:12.5px; color:#444; }
+  .person li { margin-bottom:4px; }
+
+  /* Divider */
+  .divider { border:none; border-top:1px solid #eee; margin:24px 0; }
+
+  /* Info box */
+  .info-box { background:#fff8f0; border-left:4px solid #E85D04; padding:12px 16px; border-radius:0 8px 8px 0; margin:12px 0; font-size:13px; }
+  .info-box strong { color:#E85D04; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">🔧</div>
+  <div>
+    <h1>Todo<span>Piezas</span></h1>
+    <p>TFG · Gonzalo Bilbao · Vicente Mena · Alberto Luque</p>
+    <p>Resumen completo del proyecto · Marzo 2026</p>
+  </div>
+</div>
+
+<!-- PRINT BUTTON -->
+<button class="print-btn no-print" onclick="window.print()">
+  🖨️ Guardar como PDF (Ctrl+P)
+</button>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>1. ¿Qué es TodoPiezas?</h2>
+
+<p>Aplicación <strong>multiplataforma</strong> (móvil + escritorio + web) desarrollada con Flutter para la <strong>gestión y localización de repuestos de automóviles en desguaces</strong>. Centraliza el stock de múltiples desguaces, permite buscar piezas con filtros avanzados y localiza el desguace más cercano mediante geolocalización.</p>
+
+<h3>Stack tecnológico</h3>
+<table>
+  <tr><th>Capa</th><th>Tecnología</th><th>Uso</th></tr>
+  <tr><td>Frontend</td><td><span class="badge badge-flutter">Flutter / Dart</span></td><td>App multiplataforma (Android, iOS, Web, Windows)</td></tr>
+  <tr><td>Backend</td><td><span class="badge badge-php">PHP</span></td><td>API REST con autenticación por token</td></tr>
+  <tr><td>Base de datos</td><td><span class="badge badge-mysql">MySQL</span></td><td>Inventario, desguaces, piezas</td></tr>
+  <tr><td>IDE</td><td>VS Code</td><td>Desarrollo y depuración</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>2. Funcionalidades implementadas</h2>
+
+<h3>Para el cliente (usuario)</h3>
+<table>
+  <tr><th>Pantalla</th><th>Qué hace</th></tr>
+  <tr><td>Splash</td><td>Animación de carga con logo de TodoPiezas (2.5s)</td></tr>
+  <tr><td>Home</td><td>Pantalla principal con acceso a búsqueda y panel admin</td></tr>
+  <tr><td>Buscar piezas</td><td>Filtros por Marca, Modelo, Año, Categoría, Color y Estado</td></tr>
+  <tr><td>Resultados</td><td>Lista de piezas ordenadas por distancia (GPS), botón de mapa</td></tr>
+  <tr><td>Ficha de pieza</td><td>Detalles, precio, estado, desguace, botones Llamar y Navegar (GPS)</td></tr>
+  <tr><td>Mapa</td><td>Mapa OpenStreetMap con marcadores de desguaces que tienen la pieza</td></tr>
+</table>
+
+<h3>Para el desguace (administrador)</h3>
+<table>
+  <tr><th>Pantalla</th><th>Qué hace</th></tr>
+  <tr><td>Login</td><td>Acceso con email y contraseña</td></tr>
+  <tr><td>Panel admin</td><td>Lista del inventario con opciones de editar y eliminar</td></tr>
+  <tr><td>Formulario pieza</td><td>Crear o editar piezas (nombre, marca, modelo, precio, stock…)</td></tr>
+  <tr><td>Perfil desguace</td><td>Editar nombre, dirección, teléfono, horario y coordenadas GPS</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="page-break"></div>
+<h2>3. Estructura completa del proyecto</h2>
+
+<div class="tree">
+<span class="folder">TodoPiezas/</span><br>
+│<br>
+├── <span class="new">📄 preview.html</span>         <span class="comment">← previsualización sin instalar nada</span><br>
+├── <span class="new">📄 pubspec.yaml</span>          <span class="comment">← dependencias Flutter actualizadas</span><br>
+│<br>
+├── <span class="folder">📁 database/</span><br>
+│   ├── <span class="new">schema.sql</span>            <span class="comment">← BD MySQL completa con tablas e índices</span><br>
+│   └── <span class="new">seed.php</span>              <span class="comment">← script para insertar datos de prueba</span><br>
+│<br>
+├── <span class="folder">📁 backend/</span>            <span class="comment">← API REST en PHP</span><br>
+│   ├── <span class="folder">config/</span><br>
+│   │   ├── <span class="new">database.php</span>      <span class="comment">← conexión PDO + tokens JWT</span><br>
+│   │   └── <span class="new">helpers.php</span>       <span class="comment">← CORS, respuestas JSON, validación token</span><br>
+│   ├── <span class="folder">auth/</span><br>
+│   │   ├── <span class="new">login.php</span>         <span class="comment">← POST login desguace</span><br>
+│   │   └── <span class="new">register.php</span>      <span class="comment">← POST registro nuevo desguace</span><br>
+│   ├── <span class="folder">piezas/</span><br>
+│   │   ├── <span class="new">search.php</span>        <span class="comment">← GET buscar con filtros</span><br>
+│   │   ├── <span class="new">get.php</span>           <span class="comment">← GET pieza por ID</span><br>
+│   │   ├── <span class="new">list.php</span>          <span class="comment">← GET inventario del admin</span><br>
+│   │   ├── <span class="new">create.php</span>        <span class="comment">← POST nueva pieza</span><br>
+│   │   ├── <span class="new">update.php</span>        <span class="comment">← PUT editar pieza</span><br>
+│   │   └── <span class="new">delete.php</span>        <span class="comment">← DELETE eliminar pieza</span><br>
+│   └── <span class="folder">desguaces/</span><br>
+│       ├── <span class="new">list.php</span>          <span class="comment">← GET todos los desguaces</span><br>
+│       ├── <span class="new">get.php</span>           <span class="comment">← GET perfil de un desguace</span><br>
+│       └── <span class="new">update.php</span>        <span class="comment">← PUT editar perfil desguace</span><br>
+│<br>
+└── <span class="folder">📁 lib/</span>               <span class="comment">← App Flutter</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="new">main.dart</span>           <span class="comment">← entry point con MultiProvider</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="folder">core/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── <span class="new">constants.dart</span>    <span class="comment">← URL API, listas de marcas/categorías</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   └── <span class="new">theme.dart</span>        <span class="comment">← colores naranja #E85D04 y oscuro #1A1A2E</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="folder">models/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── <span class="new">pieza.dart</span>        <span class="comment">← fromJson / toJson</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── <span class="new">desguace.dart</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   └── <span class="new">vehiculo.dart</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="folder">services/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   └── <span class="new">api_service.dart</span>  <span class="comment">← todas las llamadas HTTP a PHP</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="folder">providers/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── <span class="new">search_provider.dart</span> <span class="comment">← búsqueda + GPS + distancias</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   └── <span class="new">auth_provider.dart</span>   <span class="comment">← login / logout admin</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="folder">screens/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── <span class="new">splash/splash_screen.dart</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── <span class="new">home/home_screen.dart</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── <span class="new">search/search_screen.dart</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── <span class="new">search/results_screen.dart</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── <span class="new">product/product_screen.dart</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── <span class="new">map/map_screen.dart</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   ├── <span class="new">auth/login_screen.dart</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   └── <span class="new">admin/admin_screen.dart</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;│   └── <span class="new">admin/profile_screen.dart</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="folder">widgets/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="new">pieza_card.dart</span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>4. Base de datos MySQL</h2>
+
+<h3>Tabla: desguaces</h3>
+<table>
+  <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+  <tr><td>id</td><td>INT PK</td><td>Identificador único</td></tr>
+  <tr><td>nombre</td><td>VARCHAR(100)</td><td>Nombre del desguace</td></tr>
+  <tr><td>direccion</td><td>VARCHAR(200)</td><td>Dirección física</td></tr>
+  <tr><td>telefono</td><td>VARCHAR(20)</td><td>Teléfono de contacto</td></tr>
+  <tr><td>email</td><td>VARCHAR(100) UNIQUE</td><td>Email de acceso (login)</td></tr>
+  <tr><td>password</td><td>VARCHAR(255)</td><td>Contraseña hasheada con bcrypt</td></tr>
+  <tr><td>lat / lng</td><td>DECIMAL(10,8)</td><td>Coordenadas GPS</td></tr>
+  <tr><td>horario</td><td>VARCHAR(100)</td><td>Horario de apertura</td></tr>
+</table>
+
+<h3>Tabla: piezas</h3>
+<table>
+  <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+  <tr><td>id</td><td>INT PK</td><td>Identificador único</td></tr>
+  <tr><td>nombre</td><td>VARCHAR(100)</td><td>Nombre de la pieza</td></tr>
+  <tr><td>descripcion</td><td>TEXT</td><td>Descripción detallada</td></tr>
+  <tr><td>precio</td><td>DECIMAL(10,2)</td><td>Precio en euros</td></tr>
+  <tr><td>estado</td><td>ENUM</td><td>'Nuevo' o 'Usado'</td></tr>
+  <tr><td>color / stock</td><td>VARCHAR / INT</td><td>Color y unidades disponibles</td></tr>
+  <tr><td>categoria</td><td>VARCHAR(50)</td><td>Motor, Carrocería, Eléctrico…</td></tr>
+  <tr><td>marca / modelo / anyo</td><td>VARCHAR / SMALLINT</td><td>Vehículo al que pertenece</td></tr>
+  <tr><td>desguace_id</td><td>INT FK</td><td>Relación con desguaces</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="page-break"></div>
+<h2>5. API REST – Endpoints PHP</h2>
+
+<table>
+  <tr><th>Método</th><th>Endpoint</th><th>Auth</th><th>Descripción</th></tr>
+  <tr><td>POST</td><td>/auth/login.php</td><td>No</td><td>Login → devuelve token JWT</td></tr>
+  <tr><td>POST</td><td>/auth/register.php</td><td>No</td><td>Registro de nuevo desguace</td></tr>
+  <tr><td>GET</td><td>/piezas/search.php</td><td>No</td><td>Búsqueda con filtros (marca, modelo…)</td></tr>
+  <tr><td>GET</td><td>/piezas/get.php?id=X</td><td>No</td><td>Detalle de una pieza</td></tr>
+  <tr><td>GET</td><td>/piezas/list.php?desguace_id=X</td><td>✅ Token</td><td>Inventario del admin</td></tr>
+  <tr><td>POST</td><td>/piezas/create.php</td><td>✅ Token</td><td>Crear nueva pieza</td></tr>
+  <tr><td>PUT</td><td>/piezas/update.php?id=X</td><td>✅ Token</td><td>Actualizar pieza</td></tr>
+  <tr><td>DELETE</td><td>/piezas/delete.php?id=X</td><td>✅ Token</td><td>Eliminar pieza</td></tr>
+  <tr><td>GET</td><td>/desguaces/list.php</td><td>No</td><td>Listado de desguaces</td></tr>
+  <tr><td>GET</td><td>/desguaces/get.php?id=X</td><td>✅ Token</td><td>Perfil de un desguace</td></tr>
+  <tr><td>PUT</td><td>/desguaces/update.php?id=X</td><td>✅ Token</td><td>Actualizar perfil desguace</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>6. Dependencias Flutter (pubspec.yaml)</h2>
+
+<pre>dependencies:
+  http: ^1.2.0          # Llamadas HTTP a la API PHP
+  provider: ^6.1.2      # Gestión de estado
+  geolocator: ^13.0.0   # GPS del usuario
+  flutter_map: ^7.0.2   # Mapa OpenStreetMap (sin API key)
+  latlong2: ^0.9.1      # Coordenadas para el mapa
+  url_launcher: ^6.3.1  # Llamadas telefónicas y navegación GPS</pre>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>7. Cómo ejecutar el proyecto</h2>
+
+<div class="info-box">
+  <strong>Cuenta de prueba:</strong> motor@desguace.com / password123
+</div>
+
+<h3>Backend PHP (XAMPP)</h3>
+<pre>1. Instalar XAMPP → https://www.apachefriends.org
+2. Iniciar Apache y MySQL desde el panel de XAMPP
+3. Copiar carpeta backend/ → C:\xampp\htdocs\todopiezas\
+4. Abrir phpMyAdmin → crear BD "todopiezas" → importar database/schema.sql
+5. Abrir http://localhost/todopiezas/seed.php → crear datos de prueba
+6. Probar: http://localhost/todopiezas/desguaces/list.php</pre>
+
+<h3>App Flutter</h3>
+<pre>cd TodoPiezas
+flutter pub get
+flutter run -d chrome        # Ver en navegador
+flutter run -d windows       # Ver en escritorio Windows
+flutter run                  # Ver en emulador/móvil Android</pre>
+
+<h3>URL de la API según dispositivo</h3>
+<table>
+  <tr><th>Dispositivo</th><th>URL en constants.dart</th></tr>
+  <tr><td>Emulador Android</td><td>http://10.0.2.2/todopiezas</td></tr>
+  <tr><td>Móvil físico (misma WiFi)</td><td>http://192.168.X.X/todopiezas</td></tr>
+  <tr><td>Chrome / Windows</td><td>http://localhost/todopiezas</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="page-break"></div>
+<h2>8. División de tareas del equipo</h2>
+
+<div class="team">
+  <div class="person">
+    <div class="person-name">Alberto</div>
+    <div class="person-role">Base de datos &amp; Backend</div>
+    <ul>
+      <li>Instalar XAMPP y crear la BD</li>
+      <li>Ejecutar schema.sql y seed.php</li>
+      <li>Adaptar config/database.php</li>
+      <li>Probar endpoints con Postman</li>
+      <li>Crear register.php funcional</li>
+      <li>Documentar modelo E/R en memoria</li>
+    </ul>
+  </div>
+  <div class="person">
+    <div class="person-name">Vicente</div>
+    <div class="person-role">Integración &amp; Lógica</div>
+    <ul>
+      <li>flutter pub get</li>
+      <li>Ajustar URL API en constants.dart</li>
+      <li>Conectar Flutter con API PHP real</li>
+      <li>Subida de imágenes de piezas</li>
+      <li>Manejo de errores de red</li>
+      <li>Probar en dispositivo físico</li>
+    </ul>
+  </div>
+  <div class="person">
+    <div class="person-name">Gonzalo</div>
+    <div class="person-role">UI/UX &amp; Geolocalización</div>
+    <ul>
+      <li>Revisar y pulir diseño de pantallas</li>
+      <li>Verificar GPS y distancias en mapa</li>
+      <li>Adaptar para web y escritorio</li>
+      <li>Añadir splash con logo real</li>
+      <li>Tests en distintos dispositivos</li>
+      <li>Redactar memoria técnica del TFG</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>9. Calendario del proyecto</h2>
+
+<table>
+  <tr><th>#</th><th>Tarea</th><th>Fechas</th><th>Estado</th></tr>
+  <tr><td>1</td><td>Análisis y Diseño BD</td><td>04/02 – 18/02</td><td><span class="badge badge-done">✅ Completado</span></td></tr>
+  <tr><td>2</td><td>Desarrollo Backend (API PHP)</td><td>19/02 – 12/03</td><td><span class="badge badge-done">✅ Completado</span></td></tr>
+  <tr><td>3</td><td>Desarrollo Frontend (Flutter)</td><td>13/03 – 02/04</td><td><span class="badge" style="background:#fff3e0;color:#e65100">⏳ En curso</span></td></tr>
+  <tr><td>4</td><td>Integración y Lógica</td><td>03/04 – 23/04</td><td><span class="badge" style="background:#f5f5f5;color:#666">🔲 Pendiente</span></td></tr>
+  <tr><td>5</td><td>Geolocalización</td><td>24/04 – 07/05</td><td><span class="badge" style="background:#f5f5f5;color:#666">🔲 Pendiente</span></td></tr>
+  <tr><td>6</td><td>Pruebas y Depuración</td><td>08/05 – 21/05</td><td><span class="badge" style="background:#f5f5f5;color:#666">🔲 Pendiente</span></td></tr>
+  <tr><td>7</td><td>Documentación Final</td><td>22/05 – 30/05</td><td><span class="badge" style="background:#f5f5f5;color:#666">🔲 Pendiente</span></td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<hr class="divider">
+<p style="text-align:center;color:#aaa;font-size:12px;margin-top:24px">
+  TodoPiezas · TFG · Gonzalo Bilbao · Vicente Mena · Alberto Luque · Marzo 2026<br>
+  Generado con Claude Code · <em>Este documento es un resumen del proyecto completo</em>
+</p>
+
+</body>
+</html>

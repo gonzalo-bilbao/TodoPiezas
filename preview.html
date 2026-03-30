@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TodoPiezas – Preview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #E85D04;
+    --secondary: #1A1A2E;
+    --bg: #F5F5F5;
+    --white: #fff;
+    --grey: #888;
+    --light: #f0f0f0;
+    --green: #2e7d32;
+    --orange: #e65100;
+  }
+  body { background: #ddd; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; font-family: 'Segoe UI', sans-serif; gap: 20px; flex-wrap: wrap; }
+
+  /* Phone frame */
+  .phone { width: 375px; height: 780px; background: var(--bg); border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,.35); overflow: hidden; position: relative; border: 8px solid #111; flex-shrink: 0; }
+  .screen { display: none; flex-direction: column; height: 100%; overflow: hidden; }
+  .screen.active { display: flex; }
+
+  /* AppBar */
+  .appbar { background: var(--secondary); color: white; padding: 14px 16px; display: flex; align-items: center; gap: 10px; min-height: 56px; flex-shrink: 0; }
+  .appbar-title { font-size: 17px; font-weight: 600; flex: 1; }
+  .appbar-back { background: none; border: none; color: white; font-size: 22px; cursor: pointer; padding: 4px; }
+  .appbar-action { background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 4px; }
+
+  /* Scroll content */
+  .content { flex: 1; overflow-y: auto; padding: 16px; }
+
+  /* Buttons */
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+  .btn:active { opacity: .8; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-outline { background: transparent; color: var(--secondary); border: 2px solid var(--secondary); }
+  .btn-secondary { background: var(--secondary); color: white; }
+  .btn-sm { padding: 8px 14px; font-size: 13px; border-radius: 6px; width: auto; }
+
+  /* Inputs */
+  .input-group { margin-bottom: 14px; }
+  .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: var(--secondary); }
+  .input-group input, .input-group select {
+    width: 100%; padding: 11px 12px; border: 1.5px solid #ccc; border-radius: 8px;
+    font-size: 14px; background: white; outline: none; appearance: none;
+  }
+  .input-group input:focus, .input-group select:focus { border-color: var(--primary); }
+
+  /* Cards */
+  .card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.08); margin-bottom: 10px; overflow: hidden; cursor: pointer; transition: transform .1s; }
+  .card:active { transform: scale(.98); }
+
+  /* Pieza card */
+  .pieza-card { display: flex; padding: 12px; gap: 12px; align-items: flex-start; }
+  .pieza-img { width: 68px; height: 68px; background: var(--light); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
+  .pieza-info { flex: 1; min-width: 0; }
+  .pieza-nombre { font-weight: 700; font-size: 14px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pieza-sub { font-size: 12px; color: var(--grey); margin-bottom: 3px; }
+  .pieza-desguace { font-size: 12px; color: var(--secondary); }
+  .pieza-precio { font-weight: 700; font-size: 16px; color: var(--primary); }
+  .pieza-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .badge { padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .badge-usado { background: #fff3e0; color: var(--orange); }
+  .badge-nuevo { background: #e8f5e9; color: var(--green); }
+
+  /* ── SPLASH ─────────────────────────── */
+  #splash { background: var(--secondary); justify-content: center; align-items: center; }
+  .logo-box { width: 100px; height: 100px; background: var(--primary); border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 52px; margin-bottom: 20px; animation: pop .6s ease; }
+  .splash-title { font-size: 36px; font-weight: 800; letter-spacing: 1px; animation: fadeup .8s .2s both; }
+  .splash-title span { color: var(--primary); }
+  .splash-sub { color: rgba(255,255,255,.5); font-size: 14px; margin-top: 6px; animation: fadeup .8s .4s both; }
+  @keyframes pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes fadeup { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* ── HOME ────────────────────────────── */
+  #home { justify-content: center; align-items: center; padding: 32px 24px; background: var(--bg); }
+  #home .logo-box-sm { width: 90px; height: 90px; background: var(--secondary); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 46px; margin-bottom: 14px; }
+  #home h1 { font-size: 32px; font-weight: 800; color: var(--secondary); }
+  #home p { font-size: 13px; color: var(--grey); text-align: center; margin-bottom: 48px; }
+  #home .btn { margin-bottom: 12px; }
+
+  /* ── SEARCH ──────────────────────────── */
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .error-text { color: red; font-size: 13px; margin-bottom: 10px; display: none; }
+
+  /* ── RESULTS ─────────────────────────── */
+  .results-header { font-size: 13px; color: var(--grey); margin-bottom: 10px; }
+
+  /* ── PRODUCT ─────────────────────────── */
+  .product-img { width: 100%; height: 200px; background: var(--light); display: flex; align-items: center; justify-content: center; font-size: 80px; flex-shrink: 0; }
+  .product-content { padding: 16px; flex: 1; overflow-y: auto; }
+  .product-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .product-nombre { font-size: 20px; font-weight: 700; flex: 1; margin-right: 10px; }
+  .product-precio { font-size: 22px; font-weight: 800; color: var(--primary); }
+  .info-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 14px; color: #333; }
+  .info-row .icon { font-size: 16px; color: var(--grey); }
+  .divider { border: none; border-top: 1px solid #eee; margin: 12px 0; }
+  .section-title { font-weight: 700; font-size: 15px; color: var(--secondary); margin-bottom: 8px; }
+  .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+
+  /* ── MAP ─────────────────────────────── */
+  .map-placeholder { flex: 1; background: #e8ead0; position: relative; overflow: hidden; }
+  .map-tiles { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,0,0,.04) 40px, rgba(0,0,0,.04) 41px), repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,.04) 40px, rgba(0,0,0,.04) 41px); }
+  .map-road-h { position: absolute; left: 0; right: 0; height: 6px; background: #fff; }
+  .map-road-v { position: absolute; top: 0; bottom: 0; width: 6px; background: #fff; }
+  .map-pin { position: absolute; font-size: 32px; transform: translate(-50%, -100%); cursor: pointer; filter: drop-shadow(0 2px 4px rgba(0,0,0,.3)); transition: transform .15s; }
+  .map-pin:hover { transform: translate(-50%, -110%) scale(1.2); }
+  .map-popup { position: absolute; bottom: 16px; left: 16px; right: 16px; background: white; border-radius: 12px; padding: 14px; box-shadow: 0 4px 20px rgba(0,0,0,.15); display: none; }
+  .map-popup.visible { display: block; }
+  .map-popup-title { font-weight: 700; font-size: 15px; }
+  .map-popup-sub { font-size: 12px; color: var(--grey); margin-bottom: 6px; }
+  .map-popup-price { font-weight: 700; color: var(--primary); font-size: 16px; }
+  .map-popup-dist { font-size: 12px; color: var(--grey); }
+
+  /* ── LOGIN ───────────────────────────── */
+  #login { justify-content: center; padding: 32px 24px; }
+  #login .login-icon { font-size: 56px; text-align: center; margin-bottom: 8px; }
+  #login h2 { text-align: center; font-size: 22px; color: var(--secondary); margin-bottom: 28px; }
+
+  /* ── ADMIN ───────────────────────────── */
+  .admin-item { display: flex; align-items: center; gap: 12px; padding: 12px; }
+  .admin-avatar { width: 44px; height: 44px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; flex-shrink: 0; }
+  .admin-name { font-weight: 600; font-size: 14px; }
+  .admin-sub { font-size: 12px; color: var(--grey); }
+  .admin-actions { margin-left: auto; display: flex; gap: 6px; }
+  .icon-btn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px; }
+  .fab { position: absolute; bottom: 20px; right: 20px; background: var(--primary); color: white; border: none; border-radius: 28px; padding: 14px 20px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(232,93,4,.4); display: flex; align-items: center; gap: 6px; }
+
+  /* Nav bar bottom */
+  .nav-info { position: absolute; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #eee; padding: 6px 0; display: flex; justify-content: space-around; }
+  .nav-btn { background: none; border: none; font-size: 11px; color: var(--grey); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 12px; }
+  .nav-btn .nav-icon { font-size: 20px; }
+  .nav-btn.active { color: var(--primary); }
+
+  /* Side panel label */
+  .panel-label { background: var(--secondary); color: white; padding: 10px 16px; font-size: 13px; font-weight: 600; border-radius: 8px 8px 0 0; text-align: center; }
+  .phone-wrapper { display: flex; flex-direction: column; align-items: center; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ PHONE 1: Splash → Home → Search ═══════════════ -->
+<div class="phone-wrapper">
+  <div class="panel-label">📱 Pantallas de Cliente</div>
+  <div class="phone" id="phone1">
+
+    <!-- SPLASH -->
+    <div class="screen active" id="splash">
+      <div style="display:flex;flex-direction:column;align-items:center;color:white">
+        <div class="logo-box">🔧</div>
+        <div class="splash-title">Todo<span>Piezas</span></div>
+        <div class="splash-sub">Repuestos cerca de ti</div>
+      </div>
+    </div>
+
+    <!-- HOME -->
+    <div class="screen" id="home">
+      <div class="logo-box-sm">🔧</div>
+      <h1>TodoPiezas</h1>
+      <p>Localiza repuestos en desguaces cercanos</p>
+      <button class="btn btn-primary" onclick="show('search')">🔍 Buscar piezas</button>
+      <button class="btn btn-outline" onclick="show('login')">🏭 Acceso desguace</button>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="screen" id="search">
+      <div class="appbar">
+        <button class="appbar-back" onclick="show('home')">←</button>
+        <span class="appbar-title">Buscar Piezas</span>
+        <button class="appbar-action" onclick="clearFilters()">Limpiar</button>
+      </div>
+      <div class="content">
+        <div class="input-group">
+          <label>Marca</label>
+          <select id="f-marca" onchange="updateModelo()">
+            <option value="">Selecciona marca</option>
+            <option>Seat</option><option>Volkswagen</option><option>Ford</option>
+            <option>Renault</option><option>BMW</option><option>Toyota</option>
+            <option>Peugeot</option><option>Hyundai</option><option>Opel</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Modelo</label>
+          <input id="f-modelo" placeholder="Ej: Ibiza, Golf, Focus...">
+        </div>
+        <div class="row-2">
+          <div class="input-group">
+            <label>Año</label>
+            <input id="f-anyo" type="number" placeholder="Ej: 2015">
+          </div>
+          <div class="input-group">
+            <label>Estado</label>
+            <select id="f-estado">
+              <option value="">Cualquiera</option>
+              <option>Usado</option><option>Nuevo</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Categoría</label>
+          <select id="f-cat">
+            <option value="">Selecciona categoría</option>
+            <option>Motor</option><option>Carrocería</option><option>Interior</option>
+            <option>Suspensión</option><option>Frenos</option><option>Eléctrico</option>
+            <option>Transmisión</option><option>Escape</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Color</label>
+          <select id="f-color">
+            <option value="">Cualquier color</option>
+            <option>Blanco</option><option>Negro</option><option>Gris</option>
+            <option>Rojo</option><option>Azul</option><option>Plateado</option>
+          </select>
+        </div>
+        <div class="error-text" id="search-error">Selecciona al menos una marca o categoría</div>
+        <button class="btn btn-primary" onclick="doSearch()">🔍 Buscar</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="screen" id="results">
+      <div class="appbar">
+        <button class="appbar-back" onclick="show('search')">←</button>
+        <span class="appbar-title" id="results-count">8 resultados</span>
+        <button class="appbar-action" onclick="show('map')" title="Ver mapa">🗺️</button>
+      </div>
+      <div class="content">
+        <div class="results-header">Ordenados por distancia · GPS activo 📍</div>
+        <div id="results-list"></div>
+      </div>
+    </div>
+
+    <!-- PRODUCT -->
+    <div class="screen" id="product">
+      <div class="appbar">
+        <button class="appbar-back" onclick="show('results')">←</button>
+        <span class="appbar-title" id="product-title">Pieza</span>
+      </div>
+      <div class="product-img" id="product-emoji">🔩</div>
+      <div class="product-content">
+        <div class="product-header">
+          <span class="product-nombre" id="product-nombre"></span>
+          <span class="product-precio" id="product-precio"></span>
+        </div>
+        <div id="product-badges" style="margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap"></div>
+        <div class="info-row"><span class="icon">🚗</span><span id="p-vehiculo"></span></div>
+        <div class="info-row"><span class="icon">🏷️</span><span id="p-categoria"></span></div>
+        <div class="info-row"><span class="icon">🎨</span><span id="p-color"></span></div>
+        <div class="info-row"><span class="icon">📦</span><span id="p-stock"></span></div>
+        <div class="info-row"><span class="icon">📍</span><span id="p-distancia"></span></div>
+        <hr class="divider">
+        <div class="section-title">Desguace</div>
+        <div class="info-row"><span class="icon">🏭</span><span id="p-desguace"></span></div>
+        <div class="info-row"><span class="icon">📌</span><span id="p-direccion"></span></div>
+        <div class="btn-row">
+          <button class="btn btn-primary btn-sm" onclick="alert('📞 Llamando al desguace...')">📞 Llamar</button>
+          <button class="btn btn-secondary btn-sm" onclick="alert('🗺️ Abriendo navegador GPS...')">🧭 Navegar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAP -->
+    <div class="screen" id="map">
+      <div class="appbar">
+        <button class="appbar-back" onclick="show('results')">←</button>
+        <span class="appbar-title">Desguaces en el mapa</span>
+      </div>
+      <div class="map-placeholder">
+        <div class="map-tiles"></div>
+        <div class="map-road-h" style="top:38%"></div>
+        <div class="map-road-h" style="top:62%"></div>
+        <div class="map-road-v" style="left:30%"></div>
+        <div class="map-road-v" style="left:70%"></div>
+        <div class="map-pin" style="top:35%;left:28%" onclick="showMapPopup(0)">📍</div>
+        <div class="map-pin" style="top:55%;left:60%" onclick="showMapPopup(1)">📍</div>
+        <div class="map-pin" style="top:25%;left:65%" onclick="showMapPopup(2)">📍</div>
+        <div class="map-popup" id="map-popup">
+          <div class="map-popup-title" id="mp-nombre"></div>
+          <div class="map-popup-sub" id="mp-dir"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span class="map-popup-price" id="mp-precio"></span>
+            <span class="map-popup-dist" id="mp-dist"></span>
+          </div>
+          <button class="btn btn-primary" style="padding:10px" onclick="show('product')">Ver detalles</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /phone1 -->
+</div>
+
+<!-- ═══════════════ PHONE 2: Admin ═══════════════ -->
+<div class="phone-wrapper">
+  <div class="panel-label">🔑 Panel Desguace (Admin)</div>
+  <div class="phone" id="phone2">
+
+    <!-- LOGIN -->
+    <div class="screen active" id="login">
+      <div class="content" style="display:flex;flex-direction:column;justify-content:center;height:100%">
+        <div class="login-icon">🏭</div>
+        <h2>Panel de Desguace</h2>
+        <div class="input-group">
+          <label>Email</label>
+          <input id="login-email" type="email" placeholder="motor@desguace.com" value="motor@desguace.com">
+        </div>
+        <div class="input-group">
+          <label>Contraseña</label>
+          <input id="login-pass" type="password" placeholder="••••••••" value="password123">
+        </div>
+        <div class="error-text" id="login-error">Credenciales incorrectas</div>
+        <button class="btn btn-primary" onclick="doLogin()">Entrar</button>
+        <div style="margin-top:12px;text-align:center;font-size:12px;color:var(--grey)">
+          Demo: motor@desguace.com / password123
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div class="screen" id="admin">
+      <div class="appbar">
+        <span class="appbar-title" id="admin-title">Desguace El Motor</span>
+        <button class="appbar-action" onclick="show2('profile')" title="Perfil">🏪</button>
+        <button class="appbar-action" onclick="show2('login')" title="Salir">🚪</button>
+      </div>
+      <div class="content" style="padding-bottom:80px">
+        <div id="admin-list"></div>
+      </div>
+      <button class="fab" onclick="showForm()">➕ Nueva pieza</button>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="screen" id="profile">
+      <div class="appbar">
+        <button class="appbar-back" onclick="show2('admin')">←</button>
+        <span class="appbar-title">Perfil del desguace</span>
+      </div>
+      <div class="content">
+        <div class="input-group"><label>Nombre del desguace</label><input value="Desguace El Motor"></div>
+        <div class="input-group"><label>Dirección</label><input value="Calle Industrial 15, Madrid"></div>
+        <div class="input-group"><label>Teléfono</label><input value="912345678"></div>
+        <div class="input-group"><label>Horario</label><input value="Lun-Sáb 8:00-19:00"></div>
+        <div class="row-2">
+          <div class="input-group"><label>Latitud</label><input value="40.4736"></div>
+          <div class="input-group"><label>Longitud</label><input value="-3.5699"></div>
+        </div>
+        <div style="font-size:12px;color:var(--grey);margin-bottom:16px">
+          Obtén las coordenadas desde Google Maps → clic derecho → "¿Qué hay aquí?"
+        </div>
+        <button class="btn btn-primary" onclick="alert('✅ Perfil guardado correctamente')">Guardar cambios</button>
+      </div>
+    </div>
+
+    <!-- FORM nueva/editar pieza -->
+    <div class="screen" id="pieza-form">
+      <div class="appbar">
+        <button class="appbar-back" onclick="show2('admin')">←</button>
+        <span class="appbar-title" id="form-title">Nueva pieza</span>
+      </div>
+      <div class="content">
+        <div class="input-group"><label>Nombre *</label><input id="f-nombre" placeholder="Ej: Alternador"></div>
+        <div class="row-2">
+          <div class="input-group"><label>Marca *</label>
+            <select id="f-fmarca"><option>Seat</option><option>Volkswagen</option><option>Ford</option><option>Renault</option><option>BMW</option></select>
+          </div>
+          <div class="input-group"><label>Modelo *</label><input id="f-fmodelo" placeholder="Ibiza"></div>
+        </div>
+        <div class="row-2">
+          <div class="input-group"><label>Año *</label><input type="number" placeholder="2015"></div>
+          <div class="input-group"><label>Precio € *</label><input type="number" placeholder="85.00"></div>
+        </div>
+        <div class="row-2">
+          <div class="input-group"><label>Categoría *</label>
+            <select><option>Motor</option><option>Carrocería</option><option>Eléctrico</option><option>Suspensión</option><option>Frenos</option></select>
+          </div>
+          <div class="input-group"><label>Estado *</label>
+            <select><option>Usado</option><option>Nuevo</option></select>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="input-group"><label>Color</label>
+            <select><option>Gris</option><option>Blanco</option><option>Negro</option><option>Rojo</option></select>
+          </div>
+          <div class="input-group"><label>Stock *</label><input type="number" placeholder="1"></div>
+        </div>
+        <div class="input-group"><label>Descripción</label><input placeholder="Descripción opcional..."></div>
+        <button class="btn btn-primary" onclick="savePieza()">Guardar pieza</button>
+      </div>
+    </div>
+
+  </div><!-- /phone2 -->
+</div>
+
+<script>
+// ── Datos de prueba ─────────────────────────────────────────────
+const piezas = [
+  { id:1, nombre:'Alternador', emoji:'⚡', marca:'Seat', modelo:'Ibiza', anyo:2015, categoria:'Eléctrico', color:'Gris', estado:'Usado', precio:85, stock:2, desguace:'Desguace El Motor', dir:'Calle Industrial 15, Madrid', dist:1.2 },
+  { id:2, nombre:'Puerta delantera izq.', emoji:'🚪', marca:'Seat', modelo:'Ibiza', anyo:2015, categoria:'Carrocería', color:'Rojo', estado:'Usado', precio:120, stock:1, desguace:'Desguace El Motor', dir:'Calle Industrial 15, Madrid', dist:1.2 },
+  { id:3, nombre:'Motor completo 1.6 TDI', emoji:'🔧', marca:'Volkswagen', modelo:'Golf', anyo:2018, categoria:'Motor', color:'Negro', estado:'Usado', precio:950, stock:1, desguace:'Desguace El Motor', dir:'Calle Industrial 15, Madrid', dist:1.2 },
+  { id:4, nombre:'Paragolpes delantero', emoji:'🚗', marca:'Renault', modelo:'Megane', anyo:2016, categoria:'Carrocería', color:'Blanco', estado:'Usado', precio:75, stock:1, desguace:'Piezas García', dir:'Polígono Sur, Nave 7, Sevilla', dist:3.8 },
+  { id:5, nombre:'Caja de cambios', emoji:'⚙️', marca:'Ford', modelo:'Focus', anyo:2014, categoria:'Transmisión', color:'Gris', estado:'Usado', precio:380, stock:1, desguace:'Piezas García', dir:'Polígono Sur, Nave 7, Sevilla', dist:3.8 },
+  { id:6, nombre:'Faro delantero derecho', emoji:'💡', marca:'BMW', modelo:'Serie 3', anyo:2019, categoria:'Eléctrico', color:'Transparente', estado:'Nuevo', precio:145, stock:3, desguace:'AutoRecambios Valencia', dir:'Avenida del Cid 45, Valencia', dist:5.1 },
+  { id:7, nombre:'Amortiguador trasero', emoji:'🔩', marca:'Toyota', modelo:'Corolla', anyo:2017, categoria:'Suspensión', color:'Negro', estado:'Usado', precio:110, stock:2, desguace:'AutoRecambios Valencia', dir:'Avenida del Cid 45, Valencia', dist:5.1 },
+  { id:8, nombre:'Salpicadero completo', emoji:'🎛️', marca:'Peugeot', modelo:'308', anyo:2016, categoria:'Interior', color:'Gris', estado:'Usado', precio:220, stock:1, desguace:'Desguace El Motor', dir:'Calle Industrial 15, Madrid', dist:1.2 },
+];
+
+const mapDesguaces = [
+  { nombre:'Desguace El Motor', dir:'Calle Industrial 15, Madrid', precio:'Alternador · 85 €', dist:'1.2 km' },
+  { nombre:'Piezas García', dir:'Polígono Sur, Nave 7, Sevilla', precio:'Paragolpes · 75 €', dist:'3.8 km' },
+  { nombre:'AutoRecambios Valencia', dir:'Avenida del Cid 45, Valencia', precio:'Faro derecho · 145 €', dist:'5.1 km' },
+];
+
+let currentPieza = null;
+let adminPiezas = [...piezas.slice(0,4)];
+
+// ── Navegación phone 1 ──────────────────────────────────────────
+function show(id) {
+  document.querySelectorAll('#phone1 .screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── Navegación phone 2 ──────────────────────────────────────────
+function show2(id) {
+  document.querySelectorAll('#phone2 .screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── Splash auto-nav ─────────────────────────────────────────────
+setTimeout(() => show('home'), 2200);
+
+// ── Búsqueda ────────────────────────────────────────────────────
+function clearFilters() {
+  ['f-marca','f-modelo','f-anyo','f-estado','f-cat','f-color'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
+
+function doSearch() {
+  const marca = document.getElementById('f-marca').value;
+  const cat   = document.getElementById('f-cat').value;
+  const err   = document.getElementById('search-error');
+  if (!marca && !cat) { err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  renderResults(piezas);
+  show('results');
+}
+
+function renderResults(data) {
+  document.getElementById('results-count').textContent = data.length + ' resultado' + (data.length !== 1 ? 's' : '');
+  document.getElementById('results-list').innerHTML = data.map((p,i) => `
+    <div class="card" onclick="openProduct(${i})">
+      <div class="pieza-card">
+        <div class="pieza-img">${p.emoji}</div>
+        <div class="pieza-info">
+          <div class="pieza-nombre">${p.nombre}</div>
+          <div class="pieza-sub">${p.marca} ${p.modelo} · ${p.categoria}</div>
+          <div class="pieza-desguace">🏭 ${p.desguace}</div>
+          <div class="pieza-sub">📍 ${p.dist} km</div>
+        </div>
+        <div class="pieza-right">
+          <span class="pieza-precio">${p.precio} €</span>
+          <span class="badge ${p.estado==='Nuevo'?'badge-nuevo':'badge-usado'}">${p.estado}</span>
+          <span style="color:var(--grey);font-size:18px">›</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openProduct(i) {
+  const p = piezas[i];
+  currentPieza = p;
+  document.getElementById('product-title').textContent = p.nombre;
+  document.getElementById('product-emoji').textContent = p.emoji;
+  document.getElementById('product-nombre').textContent = p.nombre;
+  document.getElementById('product-precio').textContent = p.precio + ' €';
+  document.getElementById('product-badges').innerHTML = `<span class="badge ${p.estado==='Nuevo'?'badge-nuevo':'badge-usado'}">${p.estado}</span>`;
+  document.getElementById('p-vehiculo').textContent = `${p.marca} ${p.modelo} (${p.anyo})`;
+  document.getElementById('p-categoria').textContent = p.categoria;
+  document.getElementById('p-color').textContent = p.color;
+  document.getElementById('p-stock').textContent = `${p.stock} en stock`;
+  document.getElementById('p-distancia').textContent = `${p.dist} km`;
+  document.getElementById('p-desguace').textContent = p.desguace;
+  document.getElementById('p-direccion').textContent = p.dir;
+  show('product');
+}
+
+// ── Mapa ────────────────────────────────────────────────────────
+function showMapPopup(i) {
+  const d = mapDesguaces[i];
+  document.getElementById('mp-nombre').textContent = d.nombre;
+  document.getElementById('mp-dir').textContent = d.dir;
+  document.getElementById('mp-precio').textContent = d.precio;
+  document.getElementById('mp-dist').textContent = d.dist;
+  document.getElementById('map-popup').classList.add('visible');
+}
+
+// ── Login ────────────────────────────────────────────────────────
+function doLogin() {
+  const email = document.getElementById('login-email').value;
+  const pass  = document.getElementById('login-pass').value;
+  const err   = document.getElementById('login-error');
+  if (email === 'motor@desguace.com' && pass === 'password123') {
+    err.style.display = 'none';
+    renderAdminList();
+    show2('admin');
+  } else {
+    err.style.display = 'block';
+  }
+}
+
+// ── Admin ────────────────────────────────────────────────────────
+function renderAdminList() {
+  document.getElementById('admin-list').innerHTML = adminPiezas.map((p,i) => `
+    <div class="card">
+      <div class="admin-item">
+        <div class="admin-avatar">${p.emoji}</div>
+        <div>
+          <div class="admin-name">${p.nombre}</div>
+          <div class="admin-sub">${p.marca} ${p.modelo} · ${p.precio} €</div>
+        </div>
+        <div class="admin-actions">
+          <button class="icon-btn" onclick="editPieza(${i})" title="Editar">✏️</button>
+          <button class="icon-btn" onclick="deletePieza(${i})" title="Eliminar">🗑️</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showForm(pieza) {
+  document.getElementById('form-title').textContent = pieza ? 'Editar pieza' : 'Nueva pieza';
+  show2('pieza-form');
+}
+
+function editPieza(i) {
+  document.getElementById('form-title').textContent = 'Editar pieza';
+  document.getElementById('f-nombre').value = adminPiezas[i].nombre;
+  document.getElementById('f-fmodelo').value = adminPiezas[i].modelo;
+  show2('pieza-form');
+}
+
+function deletePieza(i) {
+  if (confirm(`¿Eliminar "${adminPiezas[i].nombre}"?`)) {
+    adminPiezas.splice(i, 1);
+    renderAdminList();
+  }
+}
+
+function savePieza() {
+  const nombre = document.getElementById('f-nombre').value;
+  if (!nombre) { alert('El nombre es obligatorio'); return; }
+  adminPiezas.unshift({ nombre, emoji:'🔩', marca:'Seat', modelo:'Nuevo', anyo:2020, categoria:'Motor', color:'Gris', estado:'Usado', precio:0, stock:1, desguace:'Desguace El Motor', dir:'', dist:0 });
+  renderAdminList();
+  show2('admin');
+}
+
+// Render inicial resultados
+renderResults(piezas);
+</script>
+</body>
+</html>
