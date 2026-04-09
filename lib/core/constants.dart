@@ -21,6 +21,9 @@ class AppConstants {
 
   static const List<String> estados = ['Usado', 'Nuevo'];
 
+  // Solo estas categorías tienen color visible
+  static const List<String> categoriasConColor = ['Carrocería', 'Interior'];
+
   static const List<String> colores = [
     'Blanco', 'Negro', 'Gris', 'Rojo', 'Azul',
     'Verde', 'Amarillo', 'Naranja', 'Marrón', 'Plateado',
