@@ -17,6 +17,11 @@ class _SearchScreenState extends State<SearchScreen> {
   final _modeloController = TextEditingController();
   final _anyoController   = TextEditingController();
 
+  bool get _colorEnabled {
+    final cat = context.read<SearchProvider>().categoria;
+    return cat == null || AppConstants.categoriasConColor.contains(cat);
+  }
+
   @override
   void dispose() {
     _modeloController.dispose();
@@ -27,6 +32,12 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<SearchProvider>();
+    // Limpiar color si la categoría no lo admite
+    if (!_colorEnabled && provider.color != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        provider.setFilter('color', null);
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -90,10 +101,12 @@ class _SearchScreenState extends State<SearchScreen> {
               children: [
                 Expanded(
                   child: _dropdown(
-                    value: provider.color,
+                    value: _colorEnabled ? provider.color : null,
                     items: AppConstants.colores,
-                    hint: 'Color',
-                    onChanged: (v) => provider.setFilter('color', v),
+                    hint: _colorEnabled ? 'Color' : 'Sin color',
+                    onChanged: _colorEnabled
+                        ? (v) => provider.setFilter('color', v)
+                        : null,
                   ),
                 ),
                 const SizedBox(width: 12),

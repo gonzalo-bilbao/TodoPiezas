@@ -21,6 +21,11 @@ class _AdminScreenState extends State<AdminScreen> {
   bool _loading = true;
   String? _error;
 
+  // Filtros del inventario
+  String? _filterCategoria;
+  String? _filterEstado;
+  String _sortBy = 'nombre'; // nombre, precio_asc, precio_desc
+
   @override
   void initState() {
     super.initState();
@@ -136,16 +141,112 @@ class _AdminScreenState extends State<AdminScreen> {
                         ],
                       ),
                     )
-                  : RefreshIndicator(
-                      onRefresh: _loadPiezas,
-                      child: ListView.separated(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _piezas.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 8),
-                        itemBuilder: (context, i) => _buildItem(_piezas[i]),
-                      ),
+                  : Column(
+                      children: [
+                        // Barra de filtros
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          color: Colors.white,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: DropdownButtonFormField<String>(
+                                  value: _filterCategoria,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Categoría',
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                    isDense: true,
+                                  ),
+                                  hint: const Text('Todas', style: TextStyle(fontSize: 12)),
+                                  items: [
+                                    const DropdownMenuItem<String>(value: null, child: Text('Todas', style: TextStyle(fontSize: 12))),
+                                    ...AppConstants.categorias.map((e) =>
+                                        DropdownMenuItem(value: e, child: Text(e, style: const TextStyle(fontSize: 12)))),
+                                  ],
+                                  onChanged: (v) => setState(() => _filterCategoria = v),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: DropdownButtonFormField<String>(
+                                  value: _filterEstado,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Estado',
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                    isDense: true,
+                                  ),
+                                  hint: const Text('Todos', style: TextStyle(fontSize: 12)),
+                                  items: const [
+                                    DropdownMenuItem<String>(value: null, child: Text('Todos', style: TextStyle(fontSize: 12))),
+                                    DropdownMenuItem(value: 'Nuevo', child: Text('Nuevo', style: TextStyle(fontSize: 12))),
+                                    DropdownMenuItem(value: 'Usado', child: Text('Usado', style: TextStyle(fontSize: 12))),
+                                  ],
+                                  onChanged: (v) => setState(() => _filterEstado = v),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: DropdownButtonFormField<String>(
+                                  value: _sortBy,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Ordenar',
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                    isDense: true,
+                                  ),
+                                  items: const [
+                                    DropdownMenuItem(value: 'nombre', child: Text('Nombre', style: TextStyle(fontSize: 12))),
+                                    DropdownMenuItem(value: 'precio_asc', child: Text('Precio ↑', style: TextStyle(fontSize: 12))),
+                                    DropdownMenuItem(value: 'precio_desc', child: Text('Precio ↓', style: TextStyle(fontSize: 12))),
+                                  ],
+                                  onChanged: (v) => setState(() => _sortBy = v!),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Divider(height: 1),
+                        Expanded(
+                          child: RefreshIndicator(
+                            onRefresh: _loadPiezas,
+                            child: Builder(builder: (_) {
+                              final filtered = _filteredPiezas();
+                              return filtered.isEmpty
+                                  ? const Center(child: Text('Sin resultados con estos filtros', style: TextStyle(color: Colors.grey)))
+                                  : ListView.separated(
+                                      padding: const EdgeInsets.all(16),
+                                      itemCount: filtered.length,
+                                      separatorBuilder: (_, __) => const SizedBox(height: 8),
+                                      itemBuilder: (context, i) => _buildItem(filtered[i]),
+                                    );
+                            }),
+                          ),
+                        ),
+                      ],
                     ),
     );
+  }
+
+  List<Pieza> _filteredPiezas() {
+    var list = List<Pieza>.from(_piezas);
+    if (_filterCategoria != null) {
+      list = list.where((p) => p.categoria == _filterCategoria).toList();
+    }
+    if (_filterEstado != null) {
+      list = list.where((p) => p.estado == _filterEstado).toList();
+    }
+    switch (_sortBy) {
+      case 'precio_asc':
+        list.sort((a, b) => a.precio.compareTo(b.precio));
+        break;
+      case 'precio_desc':
+        list.sort((a, b) => b.precio.compareTo(a.precio));
+        break;
+      case 'nombre':
+      default:
+        list.sort((a, b) => a.nombre.compareTo(b.nombre));
+        break;
+    }
+    return list;
   }
 
   Widget _buildItem(Pieza p) => Card(
@@ -255,6 +356,9 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
     _stock.dispose();
     super.dispose();
   }
+
+  bool get _colorEnabled =>
+      _categoria == null || AppConstants.categoriasConColor.contains(_categoria);
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -427,7 +531,12 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
                     items: AppConstants.categorias
                         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                         .toList(),
-                    onChanged: (v) => setState(() => _categoria = v),
+                    onChanged: (v) => setState(() {
+                      _categoria = v;
+                      if (!AppConstants.categoriasConColor.contains(v)) {
+                        _color = null;
+                      }
+                    }),
                     validator: (v) => v == null ? 'Requerido' : null,
                   ),
                 ),
@@ -446,12 +555,16 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
               ]),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: _color,
-                decoration: const InputDecoration(labelText: 'Color'),
-                items: AppConstants.colores
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-                onChanged: (v) => setState(() => _color = v),
+                value: _colorEnabled ? _color : null,
+                decoration: InputDecoration(
+                  labelText: _colorEnabled ? 'Color' : 'Sin color (categoría mecánica)',
+                ),
+                items: _colorEnabled
+                    ? AppConstants.colores
+                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                        .toList()
+                    : [],
+                onChanged: _colorEnabled ? (v) => setState(() => _color = v) : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
