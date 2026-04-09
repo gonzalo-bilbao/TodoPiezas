@@ -1,4 +1,6 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants.dart';
 import '../../core/theme.dart';
@@ -27,10 +29,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
   Future<void> _loadPiezas() async {
     final auth = context.read<AuthProvider>();
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+    setState(() { _loading = true; _error = null; });
     try {
       _piezas = await ApiService.getAdminPiezas(auth.desguaceId!);
     } catch (e) {
@@ -52,8 +51,7 @@ class _AdminScreenState extends State<AdminScreen> {
               child: const Text('Cancelar')),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Eliminar',
-                style: TextStyle(color: Colors.red)),
+            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -65,9 +63,7 @@ class _AdminScreenState extends State<AdminScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text(e.toString().replaceFirst('Exception: ', ''))),
+          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
         );
       }
     }
@@ -85,12 +81,8 @@ class _AdminScreenState extends State<AdminScreen> {
             onPressed: () async {
               final data = await ApiService.getDesguace(auth.desguaceId!);
               if (context.mounted) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ProfileScreen(desguace: data),
-                  ),
-                );
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => ProfileScreen(desguace: data)));
               }
             },
             icon: const Icon(Icons.store_outlined),
@@ -120,12 +112,9 @@ class _AdminScreenState extends State<AdminScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(_error!,
-                          style: const TextStyle(color: Colors.red)),
+                      Text(_error!, style: const TextStyle(color: Colors.red)),
                       const SizedBox(height: 12),
-                      ElevatedButton(
-                          onPressed: _loadPiezas,
-                          child: const Text('Reintentar')),
+                      ElevatedButton(onPressed: _loadPiezas, child: const Text('Reintentar')),
                     ],
                   ),
                 )
@@ -134,8 +123,7 @@ class _AdminScreenState extends State<AdminScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.inventory_2_outlined,
-                              size: 64, color: Colors.grey),
+                          const Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey),
                           const SizedBox(height: 12),
                           const Text('No tienes piezas en el inventario',
                               style: TextStyle(color: Colors.grey)),
@@ -153,10 +141,8 @@ class _AdminScreenState extends State<AdminScreen> {
                       child: ListView.separated(
                         padding: const EdgeInsets.all(16),
                         itemCount: _piezas.length,
-                        separatorBuilder: (_, __) =>
-                            const SizedBox(height: 8),
-                        itemBuilder: (context, i) =>
-                            _buildItem(_piezas[i]),
+                        separatorBuilder: (_, __) => const SizedBox(height: 8),
+                        itemBuilder: (context, i) => _buildItem(_piezas[i]),
                       ),
                     ),
     );
@@ -164,14 +150,26 @@ class _AdminScreenState extends State<AdminScreen> {
 
   Widget _buildItem(Pieza p) => Card(
         child: ListTile(
-          leading: CircleAvatar(
-            backgroundColor: AppTheme.primary,
-            child: const Icon(Icons.car_repair, color: Colors.white),
-          ),
-          title: Text(p.nombre,
-              style: const TextStyle(fontWeight: FontWeight.w600)),
-          subtitle:
-              Text('${p.marca} ${p.modelo} · ${p.precio.toStringAsFixed(2)} €'),
+          leading: p.imagen != null && p.imagen!.isNotEmpty
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: Image.network(
+                    '${AppConstants.apiBaseUrl}/${p.imagen}',
+                    width: 44,
+                    height: 44,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const CircleAvatar(
+                      backgroundColor: AppTheme.primary,
+                      child: Icon(Icons.car_repair, color: Colors.white),
+                    ),
+                  ),
+                )
+              : const CircleAvatar(
+                  backgroundColor: AppTheme.primary,
+                  child: Icon(Icons.car_repair, color: Colors.white),
+                ),
+          title: Text(p.nombre, style: const TextStyle(fontWeight: FontWeight.w600)),
+          subtitle: Text('${p.marca} ${p.modelo} · ${p.precio.toStringAsFixed(2)} €'),
           trailing: PopupMenuButton<String>(
             onSelected: (val) {
               if (val == 'edit') _showForm(context, pieza: p);
@@ -181,8 +179,7 @@ class _AdminScreenState extends State<AdminScreen> {
               PopupMenuItem(value: 'edit', child: Text('Editar')),
               PopupMenuItem(
                 value: 'delete',
-                child: Text('Eliminar',
-                    style: TextStyle(color: Colors.red)),
+                child: Text('Eliminar', style: TextStyle(color: Colors.red)),
               ),
             ],
           ),
@@ -193,8 +190,7 @@ class _AdminScreenState extends State<AdminScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (_) =>
-          _PiezaFormSheet(pieza: pieza, onSaved: _loadPiezas),
+      builder: (_) => _PiezaFormSheet(pieza: pieza, onSaved: _loadPiezas),
     );
   }
 }
@@ -227,20 +223,26 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
   String? _estado;
   bool _saving = false;
 
+  // Imagen
+  Uint8List? _imageBytes;
+  String? _imageFilename;
+  String? _existingImagePath;
+
   @override
   void initState() {
     super.initState();
     final p = widget.pieza;
-    _nombre = TextEditingController(text: p?.nombre);
+    _nombre      = TextEditingController(text: p?.nombre);
     _descripcion = TextEditingController(text: p?.descripcion);
-    _precio = TextEditingController(text: p?.precio.toString());
-    _modelo = TextEditingController(text: p?.modelo);
-    _anyo = TextEditingController(text: p?.anyo.toString());
-    _stock = TextEditingController(text: p?.stock.toString());
-    _marca = p?.marca;
-    _categoria = p?.categoria;
-    _color = p?.color;
-    _estado = p?.estado;
+    _precio      = TextEditingController(text: p?.precio.toString());
+    _modelo      = TextEditingController(text: p?.modelo);
+    _anyo        = TextEditingController(text: p?.anyo.toString());
+    _stock       = TextEditingController(text: p?.stock.toString());
+    _marca       = p?.marca;
+    _categoria   = p?.categoria;
+    _color       = p?.color;
+    _estado      = p?.estado;
+    _existingImagePath = p?.imagen;
   }
 
   @override
@@ -254,24 +256,46 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+        source: ImageSource.gallery, imageQuality: 80, maxWidth: 800);
+    if (picked == null) return;
+    final bytes = await picked.readAsBytes();
+    setState(() {
+      _imageBytes   = bytes;
+      _imageFilename = picked.name;
+    });
+  }
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
     final auth = context.read<AuthProvider>();
-    final data = {
-      'nombre': _nombre.text.trim(),
-      'descripcion': _descripcion.text.trim(),
-      'precio': double.parse(_precio.text),
-      'marca': _marca,
-      'modelo': _modelo.text.trim(),
-      'anyo': int.parse(_anyo.text),
-      'categoria': _categoria,
-      'color': _color ?? '',
-      'estado': _estado,
-      'stock': int.parse(_stock.text),
-      'desguace_id': auth.desguaceId,
-    };
+
     try {
+      String? imagePath = _existingImagePath;
+
+      // Subir imagen si se seleccionó una nueva
+      if (_imageBytes != null && _imageFilename != null) {
+        imagePath = await ApiService.uploadImage(_imageBytes!, _imageFilename!);
+      }
+
+      final data = {
+        'nombre':      _nombre.text.trim(),
+        'descripcion': _descripcion.text.trim(),
+        'precio':      double.parse(_precio.text),
+        'marca':       _marca,
+        'modelo':      _modelo.text.trim(),
+        'anyo':        int.parse(_anyo.text),
+        'categoria':   _categoria,
+        'color':       _color ?? '',
+        'estado':      _estado,
+        'stock':       int.parse(_stock.text),
+        'desguace_id': auth.desguaceId,
+        if (imagePath != null) 'imagen': imagePath,
+      };
+
       if (widget.pieza == null) {
         await ApiService.createPieza(data);
       } else {
@@ -284,9 +308,7 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text(e.toString().replaceFirst('Exception: ', ''))),
+          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
         );
       }
     } finally {
@@ -308,16 +330,42 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
             children: [
               Text(
                 widget.pieza == null ? 'Nueva pieza' : 'Editar pieza',
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
+              // Selector de imagen
+              GestureDetector(
+                onTap: _pickImage,
+                child: Container(
+                  height: 120,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  child: _imageBytes != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.memory(_imageBytes!, fit: BoxFit.cover),
+                        )
+                      : _existingImagePath != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                '${AppConstants.apiBaseUrl}/$_existingImagePath',
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => _imagePlaceholder(),
+                              ),
+                            )
+                          : _imagePlaceholder(),
+                ),
+              ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _nombre,
-                decoration:
-                    const InputDecoration(labelText: 'Nombre de la pieza *'),
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Requerido' : null,
+                decoration: const InputDecoration(labelText: 'Nombre de la pieza *'),
+                validator: (v) => v == null || v.isEmpty ? 'Requerido' : null,
               ),
               const SizedBox(height: 12),
               Row(children: [
@@ -326,8 +374,7 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
                     value: _marca,
                     decoration: const InputDecoration(labelText: 'Marca *'),
                     items: AppConstants.marcas
-                        .map((e) =>
-                            DropdownMenuItem(value: e, child: Text(e)))
+                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                         .toList(),
                     onChanged: (v) => setState(() => _marca = v),
                     validator: (v) => v == null ? 'Requerido' : null,
@@ -337,10 +384,8 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
                 Expanded(
                   child: TextFormField(
                     controller: _modelo,
-                    decoration:
-                        const InputDecoration(labelText: 'Modelo *'),
-                    validator: (v) =>
-                        v == null || v.isEmpty ? 'Requerido' : null,
+                    decoration: const InputDecoration(labelText: 'Modelo *'),
+                    validator: (v) => v == null || v.isEmpty ? 'Requerido' : null,
                   ),
                 ),
               ]),
@@ -351,20 +396,16 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
                     controller: _anyo,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(labelText: 'Año *'),
-                    validator: (v) =>
-                        v == null || v.isEmpty ? 'Requerido' : null,
+                    validator: (v) => v == null || v.isEmpty ? 'Requerido' : null,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: TextFormField(
                     controller: _precio,
-                    keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true),
-                    decoration:
-                        const InputDecoration(labelText: 'Precio (€) *'),
-                    validator: (v) =>
-                        v == null || v.isEmpty ? 'Requerido' : null,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: const InputDecoration(labelText: 'Precio (€) *'),
+                    validator: (v) => v == null || v.isEmpty ? 'Requerido' : null,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -372,10 +413,8 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
                   child: TextFormField(
                     controller: _stock,
                     keyboardType: TextInputType.number,
-                    decoration:
-                        const InputDecoration(labelText: 'Stock *'),
-                    validator: (v) =>
-                        v == null || v.isEmpty ? 'Requerido' : null,
+                    decoration: const InputDecoration(labelText: 'Stock *'),
+                    validator: (v) => v == null || v.isEmpty ? 'Requerido' : null,
                   ),
                 ),
               ]),
@@ -384,11 +423,9 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     value: _categoria,
-                    decoration:
-                        const InputDecoration(labelText: 'Categoría *'),
+                    decoration: const InputDecoration(labelText: 'Categoría *'),
                     items: AppConstants.categorias
-                        .map((e) =>
-                            DropdownMenuItem(value: e, child: Text(e)))
+                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                         .toList(),
                     onChanged: (v) => setState(() => _categoria = v),
                     validator: (v) => v == null ? 'Requerido' : null,
@@ -398,11 +435,9 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     value: _estado,
-                    decoration:
-                        const InputDecoration(labelText: 'Estado *'),
+                    decoration: const InputDecoration(labelText: 'Estado *'),
                     items: AppConstants.estados
-                        .map((e) =>
-                            DropdownMenuItem(value: e, child: Text(e)))
+                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                         .toList(),
                     onChanged: (v) => setState(() => _estado = v),
                     validator: (v) => v == null ? 'Requerido' : null,
@@ -421,8 +456,7 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _descripcion,
-                decoration:
-                    const InputDecoration(labelText: 'Descripción'),
+                decoration: const InputDecoration(labelText: 'Descripción'),
                 maxLines: 2,
               ),
               const SizedBox(height: 20),
@@ -437,9 +471,7 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
                           child: CircularProgressIndicator(
                               color: Colors.white, strokeWidth: 2),
                         )
-                      : Text(widget.pieza == null
-                          ? 'Crear pieza'
-                          : 'Guardar cambios'),
+                      : Text(widget.pieza == null ? 'Crear pieza' : 'Guardar cambios'),
                 ),
               ),
             ],
@@ -448,4 +480,13 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
       ),
     );
   }
+
+  Widget _imagePlaceholder() => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Icon(Icons.add_photo_alternate_outlined, size: 36, color: Colors.grey),
+          SizedBox(height: 6),
+          Text('Añadir foto', style: TextStyle(color: Colors.grey, fontSize: 12)),
+        ],
+      );
 }

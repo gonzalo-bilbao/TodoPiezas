@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart';
+
 class AppConstants {
-  // Cambia esta URL por la IP/dominio real de tu servidor PHP
-  // En emulador Android: 10.0.2.2 apunta a localhost del PC
-  static const String apiBaseUrl = 'http://10.0.2.2/todopiezas/api';
+  // Web (Chrome) usa localhost, Android emulator usa 10.0.2.2
+  static String get apiBaseUrl => kIsWeb
+      ? 'http://localhost/todopiezas'
+      : 'http://10.0.2.2/todopiezas';
 
   static const List<String> marcas = [
     'Seat', 'Volkswagen', 'Ford', 'Renault', 'Peugeot',

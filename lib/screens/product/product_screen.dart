@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../models/pieza.dart';
 
@@ -20,11 +21,17 @@ class ProductScreen extends StatelessWidget {
             Container(
               width: double.infinity,
               height: 220,
-              color: Colors.grey[200],
-              child: pieza.imagen != null
-                  ? Image.network(pieza.imagen!, fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) =>
-                          const Icon(Icons.car_repair, size: 80, color: Colors.grey))
+              color: Colors.grey[100],
+              child: pieza.imagen != null && pieza.imagen!.isNotEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Image.network(
+                        '${AppConstants.apiBaseUrl}/${pieza.imagen}',
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) =>
+                            const Icon(Icons.car_repair, size: 80, color: Colors.grey),
+                      ),
+                    )
                   : const Icon(Icons.car_repair, size: 80, color: Colors.grey),
             ),
             Padding(

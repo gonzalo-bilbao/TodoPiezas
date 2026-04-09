@@ -68,40 +68,9 @@ class _SplashScreenState extends State<SplashScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Icono / logo
-                Container(
-                  width: 110,
-                  height: 110,
-                  decoration: BoxDecoration(
-                    color: AppTheme.primary,
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                  child: const Icon(
-                    Icons.car_repair,
-                    size: 64,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Nombre
-                RichText(
-                  text: const TextSpan(
-                    style: TextStyle(
-                      fontSize: 38,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'Todo',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      TextSpan(
-                        text: 'Piezas',
-                        style: TextStyle(color: AppTheme.primary),
-                      ),
-                    ],
-                  ),
+                Image.asset(
+                  'assets/images/TodoPiezas.png',
+                  width: 260,
                 ),
                 const SizedBox(height: 8),
                 const Text(

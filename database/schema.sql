@@ -113,16 +113,51 @@ INSERT INTO usuarios (nombre, email, password, telefono) VALUES
    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '600333444');
 
 INSERT INTO piezas (nombre, descripcion, precio, estado, color, stock, categoria, marca, modelo, anyo, desguace_id) VALUES
-  ('Alternador',              'Probado, funciona perfectamente',   85.00, 'Usado', 'Gris',   2, 'Eléctrico',   'Seat',       'Ibiza',   2015, 1),
-  ('Puerta delantera izq.',   'Sin golpes, pintura original',     120.00, 'Usado', 'Rojo',   1, 'Carrocería',  'Seat',       'Ibiza',   2015, 1),
-  ('Motor completo 1.6 TDI',  'Baja millas, 98.000 km',          950.00, 'Usado', 'Negro',  1, 'Motor',       'Volkswagen', 'Golf',    2018, 1),
-  ('Paragolpes delantero',    'Pequeño arañazo inferior',          75.00, 'Usado', 'Blanco', 1, 'Carrocería',  'Renault',    'Megane',  2016, 2),
-  ('Caja de cambios manual',  '5 velocidades, funciona perfecta', 380.00, 'Usado', 'Gris',   1, 'Transmisión', 'Ford',       'Focus',   2014, 2),
-  ('Faro delantero derecho',  'Nuevo, nunca montado',             145.00, 'Nuevo', 'Gris',   3, 'Eléctrico',   'BMW',        'Serie 3', 2019, 3),
-  ('Amortiguador trasero',    'Par completo',                     110.00, 'Usado', 'Negro',  2, 'Suspensión',  'Toyota',     'Corolla', 2017, 3),
-  ('Salpicadero completo',    'Sin fisuras, con airbag',          220.00, 'Usado', 'Gris',   1, 'Interior',    'Peugeot',    '308',     2016, 1);
+  -- Desguace 1 - El Motor (Madrid)
+  ('Alternador',              'Probado, funciona perfectamente',        85.00, 'Usado', 'Gris',    2, 'Eléctrico',   'Seat',       'Ibiza',      2015, 1),
+  ('Puerta delantera izq.',   'Sin golpes, pintura original',          120.00, 'Usado', 'Rojo',    1, 'Carrocería',  'Seat',       'Ibiza',      2015, 1),
+  ('Motor completo 1.6 TDI',  'Baja millas, 98.000 km',               950.00, 'Usado', 'Negro',   1, 'Motor',       'Volkswagen', 'Golf',       2018, 1),
+  ('Salpicadero completo',    'Sin fisuras, con airbag',               220.00, 'Usado', 'Gris',    1, 'Interior',    'Peugeot',    '308',        2016, 1),
+  ('Radiador agua',           'En perfecto estado, sin fugas',          95.00, 'Usado', 'Gris',    2, 'Motor',       'Seat',       'León',       2017, 1),
+  ('Bomba de combustible',    'Original, desmontada de vehículo 80km',  65.00, 'Usado', 'Negro',   3, 'Motor',       'Volkswagen', 'Passat',     2016, 1),
+  ('Luna delantera',          'Sin fisuras ni astillas',               180.00, 'Usado', 'Gris',    1, 'Carrocería',  'Renault',    'Clio',       2019, 1),
+  ('Asiento conductor',       'Cuero negro, regulable eléctricamente', 250.00, 'Usado', 'Negro',   1, 'Interior',    'BMW',        'Serie 5',    2018, 1),
+
+  -- Desguace 2 - Piezas García (Sevilla)
+  ('Paragolpes delantero',    'Pequeño arañazo inferior',               75.00, 'Usado', 'Blanco',  1, 'Carrocería',  'Renault',    'Megane',     2016, 2),
+  ('Caja de cambios manual',  '5 velocidades, funciona perfecta',      380.00, 'Usado', 'Gris',    1, 'Transmisión', 'Ford',       'Focus',      2014, 2),
+  ('Turbo 1.9 TDI',           'Reparado y probado en banco',           320.00, 'Usado', 'Negro',   1, 'Motor',       'Volkswagen', 'Golf',       2013, 2),
+  ('Capó delantero',          'Sin abolladuras, necesita pintura',      90.00, 'Usado', 'Azul',    1, 'Carrocería',  'Ford',       'Focus',      2015, 2),
+  ('Centralita motor',        'Original, compatible 1.6 gasolina',    160.00, 'Usado', 'Negro',   2, 'Eléctrico',   'Renault',    'Laguna',     2012, 2),
+  ('Diferencial trasero',     'Baja millas, excelente estado',         280.00, 'Usado', 'Gris',    1, 'Transmisión', 'BMW',        'Serie 3',    2016, 2),
+  ('Retrovisor derecho',      'Eléctrico, con intermitente',            55.00, 'Usado', 'Plata',   2, 'Carrocería',  'Toyota',     'Auris',      2017, 2),
+  ('Compresor aire acond.',   'Funciona correctamente',                195.00, 'Usado', 'Gris',    1, 'Motor',       'Seat',       'Alhambra',   2015, 2),
+
+  -- Desguace 3 - AutoRecambios Valencia
+  ('Faro delantero derecho',  'Nuevo, nunca montado',                  145.00, 'Nuevo', 'Gris',    3, 'Eléctrico',   'BMW',        'Serie 3',    2019, 3),
+  ('Amortiguador trasero',    'Par completo',                          110.00, 'Usado', 'Negro',   2, 'Suspensión',  'Toyota',     'Corolla',    2017, 3),
+  ('Motor arranque',          'Revisado, garantía 3 meses',             70.00, 'Usado', 'Gris',    2, 'Eléctrico',   'Opel',       'Astra',      2014, 3),
+  ('Maletero completo',       'Con paragolpes y cerradura',            310.00, 'Usado', 'Negro',   1, 'Carrocería',  'Audi',       'A4',         2018, 3),
+  ('Suspensión delantera',    'Brazos y muelles, kit completo',        220.00, 'Usado', 'Gris',    1, 'Suspensión',  'Mercedes',   'Clase C',    2017, 3),
+  ('Volante con airbag',      'Original, sin disparar',                175.00, 'Usado', 'Negro',   1, 'Interior',    'Volkswagen', 'Tiguan',     2019, 3),
+  ('Catalizador',             'Sin roturas internas',                   85.00, 'Usado', 'Gris',    2, 'Motor',       'Toyota',     'Yaris',      2016, 3),
+  ('Cuadro de instrumentos',  'Digital, todos los indicadores ok',     130.00, 'Usado', 'Negro',   1, 'Eléctrico',   'Ford',       'Mondeo',     2017, 3);
+
+INSERT INTO usuarios (nombre, email, password, telefono) VALUES
+  ('Carlos López',    'carlos@email.com',   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '600111222'),
+  ('María Fernández', 'maria@email.com',    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '600333444'),
+  ('Javier Ruiz',     'javier@email.com',   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '611222333'),
+  ('Laura Martínez',  'laura@email.com',    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '622444555'),
+  ('Pedro Sánchez',   'pedro@email.com',    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '633555666');
 
 INSERT INTO pedidos (usuario_id, pieza_id, desguace_id, estado, mensaje) VALUES
-  (1, 1, 1, 'pendiente',  '¿Sigue disponible el alternador?'),
-  (2, 6, 3, 'confirmado', 'Reservo el faro, paso esta semana.'),
-  (1, 3, 1, 'cancelado',  'Al final no lo necesito, gracias.');
+  (1,  1, 1, 'pendiente',   '¿Sigue disponible el alternador?'),
+  (2, 17, 3, 'confirmado',  'Reservo el faro, paso esta semana.'),
+  (1,  3, 1, 'cancelado',   'Al final no lo necesito, gracias.'),
+  (3, 10, 2, 'entregado',   'Recogido ayer, todo perfecto.'),
+  (4, 18, 3, 'pendiente',   'Necesito los dos amortiguadores.'),
+  (5,  5, 1, 'confirmado',  '¿Puedo pasar el lunes por la mañana?'),
+  (2, 12, 2, 'pendiente',   '¿Tiene el capó en otro color?'),
+  (3, 22, 3, 'entregado',   'El volante llegó en perfecto estado.'),
+  (1, 15, 2, 'cancelado',   'Ya encontré uno más cerca, disculpa.'),
+  (4,  8, 1, 'confirmado',  'Reservo el asiento, voy el viernes.');

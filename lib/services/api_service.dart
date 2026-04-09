@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import '../core/constants.dart';
 import '../models/pieza.dart';
 import '../models/desguace.dart';
 
 class ApiService {
-  static const String _base = AppConstants.apiBaseUrl;
+  static String _base = AppConstants.apiBaseUrl;
   static String? _token;
 
   static void setToken(String token) => _token = token;
@@ -141,5 +142,49 @@ class ApiService {
       body: jsonEncode(data),
     );
     if (res.statusCode != 200) throw Exception('Error al actualizar desguace');
+  }
+
+  // ── PIEZAS PÚBLICAS POR DESGUACE ─────────────────────────────────────────
+
+  static Future<List<Map<String, dynamic>>> getDesguacePiezas(int desguaceId) async {
+    final res = await http.get(
+      Uri.parse('$_base/piezas/by_desguace.php?desguace_id=$desguaceId'),
+      headers: _headers,
+    );
+    if (res.statusCode != 200) throw Exception('Error al cargar piezas');
+    final List<dynamic> data = jsonDecode(res.body);
+    return data.cast<Map<String, dynamic>>();
+  }
+
+  // ── SUBIR IMAGEN ──────────────────────────────────────────────────────────
+
+  static Future<String> uploadImage(Uint8List bytes, String filename) async {
+    final uri = Uri.parse('$_base/piezas/upload_image.php');
+    final request = http.MultipartRequest('POST', uri);
+    if (_token != null) request.headers['Authorization'] = 'Bearer $_token';
+    request.files.add(
+      http.MultipartFile.fromBytes('image', bytes, filename: filename),
+    );
+    final streamed = await request.send();
+    final res = await http.Response.fromStream(streamed);
+    if (res.statusCode != 200) throw Exception('Error al subir imagen');
+    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    return data['imagen'] as String;
+  }
+
+  // ── IMPORTAR SQL ──────────────────────────────────────────────────────────
+
+  static Future<Map<String, dynamic>> importSql(
+      int desguaceId, String sqlContent) async {
+    final res = await http.post(
+      Uri.parse('$_base/desguaces/import_sql.php'),
+      headers: _headers,
+      body: jsonEncode({'sql': sqlContent, 'desguace_id': desguaceId}),
+    );
+    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    if (res.statusCode != 200) {
+      throw Exception(data['message'] ?? 'Error al importar SQL');
+    }
+    return data;
   }
 }
