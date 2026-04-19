@@ -6,11 +6,12 @@ import '../models/pieza.dart';
 import '../models/desguace.dart';
 
 class ApiService {
-  static String _base = AppConstants.apiBaseUrl;
+  static String get _base => AppConstants.apiBaseUrl;
   static String? _token;
 
   static void setToken(String token) => _token = token;
   static void clearToken() => _token = null;
+  static String? get tokenValue => _token;
 
   static Map<String, String> get _headers => {
         'Content-Type': 'application/json',
@@ -186,5 +187,156 @@ class ApiService {
       throw Exception(data['message'] ?? 'Error al importar SQL');
     }
     return data;
+  }
+
+  // ── IMPORTAR EXCEL ────────────────────────────────────────────────────────
+
+  static Future<Map<String, dynamic>> importExcel({
+    required String token,
+    required List<Map<String, dynamic>> piezas,
+  }) async {
+    final res = await http.post(
+      Uri.parse('$_base/desguaces/import_excel.php'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'piezas': piezas}),
+    );
+    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    if (res.statusCode != 200) {
+      throw Exception(data['message'] ?? 'Error al importar Excel');
+    }
+    return data;
+  }
+
+  // ── USUARIOS PARTICULARES ─────────────────────────────────────────────────
+
+  static Future<Map<String, dynamic>> registerUser({
+    required String email,
+    required String password,
+    required String nombre,
+    String? marca,
+    String? modelo,
+    int? anyo,
+  }) async {
+    final res = await http.post(
+      Uri.parse('$_base/usuarios/register.php'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'password': password,
+        'nombre': nombre,
+        if (marca != null) 'marca': marca,
+        if (modelo != null) 'modelo': modelo,
+        if (anyo != null) 'anyo': anyo,
+      }),
+    );
+    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    if (res.statusCode != 201 && res.statusCode != 200) {
+      throw Exception(data['message'] ?? 'Error al registrar');
+    }
+    return data;
+  }
+
+  static Future<Map<String, dynamic>> loginUser(
+      String email, String password) async {
+    final res = await http.post(
+      Uri.parse('$_base/usuarios/login.php'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'password': password}),
+    );
+    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    if (res.statusCode != 200) {
+      throw Exception(data['message'] ?? 'Error al iniciar sesión');
+    }
+    return data;
+  }
+
+  static Future<Map<String, dynamic>> updateUser({
+    required String token,
+    String? nombre,
+    String? marca,
+    String? modelo,
+    int? anyo,
+    String? foto,
+  }) async {
+    final res = await http.put(
+      Uri.parse('$_base/usuarios/update.php'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        if (nombre != null) 'nombre': nombre,
+        if (marca != null) 'marca': marca,
+        if (modelo != null) 'modelo': modelo,
+        if (anyo != null) 'anyo': anyo,
+        if (foto != null) 'foto': foto,
+      }),
+    );
+    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    if (res.statusCode != 200) {
+      throw Exception(data['message'] ?? 'Error al actualizar');
+    }
+    return data;
+  }
+
+  static Future<String> uploadUserImage(Uint8List bytes, String filename) async {
+    final uri = Uri.parse('$_base/usuarios/upload_image.php');
+    final request = http.MultipartRequest('POST', uri);
+    request.files.add(
+      http.MultipartFile.fromBytes('image', bytes, filename: filename),
+    );
+    final streamed = await request.send();
+    final res = await http.Response.fromStream(streamed);
+    if (res.statusCode != 200) throw Exception('Error al subir imagen');
+    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    return data['foto'] as String;
+  }
+
+  // ── FAVORITOS ─────────────────────────────────────────────────────────────
+
+  static Future<Set<int>> getFavoritos(String token) async {
+    final res = await http.get(
+      Uri.parse('$_base/favoritos/list.php'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (res.statusCode != 200) throw Exception('Error al cargar favoritos');
+    final List<dynamic> data = jsonDecode(res.body);
+    return data.map((e) => int.parse(e.toString())).toSet();
+  }
+
+  static Future<void> addFavorito(String token, int piezaId) async {
+    await http.post(
+      Uri.parse('$_base/favoritos/add.php'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'pieza_id': piezaId}),
+    );
+  }
+
+  static Future<void> removeFavorito(String token, int piezaId) async {
+    await http.post(
+      Uri.parse('$_base/favoritos/remove.php'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'pieza_id': piezaId}),
+    );
+  }
+
+  // ── ESTADÍSTICAS DESGUACE ─────────────────────────────────────────────────
+
+  static Future<Map<String, dynamic>> getDesguaceStats(int desguaceId) async {
+    final res = await http.get(
+      Uri.parse('$_base/desguaces/stats.php?desguace_id=$desguaceId'),
+      headers: _headers,
+    );
+    if (res.statusCode != 200) throw Exception('Error al cargar estadísticas');
+    return jsonDecode(res.body) as Map<String, dynamic>;
   }
 }

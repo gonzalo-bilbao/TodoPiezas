@@ -100,7 +100,7 @@ class _DesguaceDetailScreenState extends State<DesguaceDetailScreen> {
                         '${d.distancia!.toStringAsFixed(1)} km de distancia'),
                   ],
                   const SizedBox(height: 24),
-                  // Botones
+                  // Botones principales
                   Row(
                     children: [
                       Expanded(
@@ -122,6 +122,32 @@ class _DesguaceDetailScreenState extends State<DesguaceDetailScreen> {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 10),
+                  // Botón WhatsApp
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: (d.whatsapp != null && d.whatsapp!.isNotEmpty)
+                          ? () {
+                              final num = d.whatsapp!.replaceAll(RegExp(r'[^0-9]'), '');
+                              launchUrl(
+                                Uri.parse('https://wa.me/$num?text=Hola,%20he%20visto%20su%20desguace%20en%20TodoPiezas'),
+                                mode: LaunchMode.externalApplication,
+                              );
+                            }
+                          : null,
+                      icon: const Icon(Icons.chat),
+                      label: Text(
+                        (d.whatsapp != null && d.whatsapp!.isNotEmpty)
+                            ? 'WhatsApp'
+                            : 'WhatsApp (no disponible)',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF25D366),
+                        disabledBackgroundColor: Colors.grey[400],
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 28),
                   // Tabla de piezas
