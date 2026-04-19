@@ -189,7 +189,7 @@ class _SearchScreenState extends State<SearchScreen> {
     required String? value,
     required List<String> items,
     required String hint,
-    required void Function(String?) onChanged,
+    required void Function(String?)? onChanged,
   }) =>
       DropdownButtonFormField<String>(
         value: value,

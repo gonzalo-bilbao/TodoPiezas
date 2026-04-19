@@ -8,6 +8,8 @@ import '../../models/pieza.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/api_service.dart';
 import 'profile_screen.dart';
+import 'import_excel_screen.dart';
+import '../../widgets/stats_card.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -84,6 +86,17 @@ class _AdminScreenState extends State<AdminScreen> {
         actions: [
           IconButton(
             onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ImportExcelScreen()),
+              );
+              if (result == true) _loadPiezas();
+            },
+            icon: const Icon(Icons.table_view),
+            tooltip: 'Importar Excel',
+          ),
+          IconButton(
+            onPressed: () async {
               final data = await ApiService.getDesguace(auth.desguaceId!);
               if (context.mounted) {
                 Navigator.push(context,
@@ -143,6 +156,8 @@ class _AdminScreenState extends State<AdminScreen> {
                     )
                   : Column(
                       children: [
+                        // Estadísticas
+                        StatsCard(desguaceId: auth.desguaceId!),
                         // Barra de filtros
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

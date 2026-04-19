@@ -89,7 +89,7 @@ class SearchProvider extends ChangeNotifier {
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.medium,
         ),
-      );
+      ).timeout(const Duration(seconds: 15));
     } catch (_) {
       // Si no hay ubicación, seguimos sin ordenar por distancia
     }

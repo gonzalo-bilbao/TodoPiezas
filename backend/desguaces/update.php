@@ -23,6 +23,7 @@ try {
              nombre    = ?,
              direccion = ?,
              telefono  = ?,
+             whatsapp  = ?,
              horario   = ?,
              lat       = ?,
              lng       = ?
@@ -33,6 +34,7 @@ try {
         $input['nombre'],
         $input['direccion'],
         $input['telefono'],
+        $input['whatsapp'] ?? null,
         $input['horario'] ?? '',
         $input['lat'],
         $input['lng'],

@@ -3,6 +3,7 @@ class Desguace {
   final String nombre;
   final String direccion;
   final String telefono;
+  final String? whatsapp;
   final String email;
   final double lat;
   final double lng;
@@ -14,6 +15,7 @@ class Desguace {
     required this.nombre,
     required this.direccion,
     required this.telefono,
+    this.whatsapp,
     required this.email,
     required this.lat,
     required this.lng,
@@ -26,6 +28,7 @@ class Desguace {
         nombre: json['nombre'] ?? '',
         direccion: json['direccion'] ?? '',
         telefono: json['telefono'] ?? '',
+        whatsapp: json['whatsapp'],
         email: json['email'] ?? '',
         lat: double.parse(json['lat'].toString()),
         lng: double.parse(json['lng'].toString()),
@@ -36,6 +39,7 @@ class Desguace {
         'nombre': nombre,
         'direccion': direccion,
         'telefono': telefono,
+        'whatsapp': whatsapp,
         'email': email,
         'lat': lat,
         'lng': lng,

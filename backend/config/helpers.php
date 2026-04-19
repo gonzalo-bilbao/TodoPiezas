@@ -77,3 +77,46 @@ function getJsonInput(): array
     $raw = file_get_contents('php://input');
     return json_decode($raw, true) ?? [];
 }
+
+// ── Tokens usuarios particulares ───────────────────────────────
+function generateUserToken(int $userId): string
+{
+    $payload   = base64_encode(json_encode([
+        'user_id' => $userId,
+        'type'    => 'user',
+        'exp'     => time() + 86400 * 30, // 30 días
+    ]));
+    $signature = hash_hmac('sha256', $payload, SECRET_KEY);
+    return "$payload.$signature";
+}
+
+function validateUserToken(): array
+{
+    $headers = getallheaders();
+    $auth    = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+
+    if (!str_starts_with($auth, 'Bearer ')) {
+        jsonError('Token requerido', 401);
+    }
+
+    $token = substr($auth, 7);
+    $parts = explode('.', $token);
+
+    if (count($parts) !== 2) {
+        jsonError('Token inválido', 401);
+    }
+
+    [$payload, $signature] = $parts;
+
+    if (!hash_equals(hash_hmac('sha256', $payload, SECRET_KEY), $signature)) {
+        jsonError('Token inválido', 401);
+    }
+
+    $data = json_decode(base64_decode($payload), true);
+
+    if (!$data || ($data['type'] ?? '') !== 'user' || $data['exp'] < time()) {
+        jsonError('Token expirado o inválido', 401);
+    }
+
+    return $data;
+}

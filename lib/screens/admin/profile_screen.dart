@@ -21,6 +21,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late final TextEditingController _nombre;
   late final TextEditingController _direccion;
   late final TextEditingController _telefono;
+  late final TextEditingController _whatsapp;
   late final TextEditingController _horario;
   late final TextEditingController _lat;
   late final TextEditingController _lng;
@@ -38,6 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _nombre    = TextEditingController(text: d['nombre']?.toString() ?? '');
     _direccion = TextEditingController(text: d['direccion']?.toString() ?? '');
     _telefono  = TextEditingController(text: d['telefono']?.toString() ?? '');
+    _whatsapp  = TextEditingController(text: d['whatsapp']?.toString() ?? '');
     _horario   = TextEditingController(text: d['horario']?.toString() ?? '');
     _lat       = TextEditingController(text: d['lat']?.toString() ?? '');
     _lng       = TextEditingController(text: d['lng']?.toString() ?? '');
@@ -50,6 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _nombre.dispose();
     _direccion.dispose();
     _telefono.dispose();
+    _whatsapp.dispose();
     _horario.dispose();
     _lat.dispose();
     _lng.dispose();
@@ -68,6 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'nombre':    _nombre.text.trim(),
         'direccion': _direccion.text.trim(),
         'telefono':  _telefono.text.trim(),
+        'whatsapp':  _whatsapp.text.trim().isEmpty ? null : _whatsapp.text.trim(),
         'horario':   _horario.text.trim(),
         'lat':       double.tryParse(_lat.text) ?? 0.0,
         'lng':       double.tryParse(_lng.text) ?? 0.0,
@@ -161,6 +165,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(labelText: 'Teléfono *'),
                 validator: (v) => v == null || v.isEmpty ? 'Requerido' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _whatsapp,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'WhatsApp (opcional)',
+                  hintText: 'Ej: 34612345678',
+                  prefixIcon: Icon(Icons.chat, color: Color(0xFF25D366)),
+                ),
               ),
               const SizedBox(height: 12),
               TextFormField(

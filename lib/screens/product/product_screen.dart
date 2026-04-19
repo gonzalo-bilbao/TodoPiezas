@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../models/pieza.dart';
+import '../../providers/favoritos_provider.dart';
 
 class ProductScreen extends StatelessWidget {
   final Pieza pieza;
@@ -11,8 +14,28 @@ class ProductScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final favs = context.watch<FavoritosProvider>();
+    final esFav = favs.isFavorito(pieza.id);
+
     return Scaffold(
-      appBar: AppBar(title: Text(pieza.nombre)),
+      appBar: AppBar(
+        title: Text(pieza.nombre),
+        actions: [
+          IconButton(
+            tooltip: esFav ? 'Quitar de favoritos' : 'Añadir a favoritos',
+            icon: Icon(
+              esFav ? Icons.favorite : Icons.favorite_border,
+              color: esFav ? Colors.red : null,
+            ),
+            onPressed: () => context.read<FavoritosProvider>().toggle(pieza.id),
+          ),
+          IconButton(
+            tooltip: 'Compartir',
+            icon: const Icon(Icons.share),
+            onPressed: () => _share(context),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +85,6 @@ class ProductScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  // Chips de estado y stock
                   Wrap(
                     spacing: 8,
                     children: [
@@ -78,7 +100,6 @@ class ProductScreen extends StatelessWidget {
                     Text(pieza.descripcion,
                         style: const TextStyle(color: Colors.grey)),
                   const Divider(height: 28),
-                  // Info pieza
                   _infoRow(Icons.directions_car_outlined,
                       '${pieza.marca} ${pieza.modelo} (${pieza.anyo})'),
                   _infoRow(Icons.category_outlined, pieza.categoria),
@@ -87,7 +108,6 @@ class ProductScreen extends StatelessWidget {
                     _infoRow(Icons.near_me,
                         '${pieza.distancia!.toStringAsFixed(1)} km del desguace'),
                   const Divider(height: 28),
-                  // Info desguace
                   const Text(
                     'Desguace',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -97,7 +117,6 @@ class ProductScreen extends StatelessWidget {
                   _infoRow(Icons.location_on_outlined, pieza.desguaceDireccion),
                   _infoRow(Icons.phone_outlined, pieza.desguaceTelefono),
                   const SizedBox(height: 20),
-                  // Botones de acción
                   Row(
                     children: [
                       Expanded(
@@ -129,6 +148,17 @@ class ProductScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _share(BuildContext context) {
+    final texto =
+        '¡Mira esta pieza en TodoPiezas!\n\n'
+        '${pieza.nombre}\n'
+        '${pieza.marca} ${pieza.modelo} (${pieza.anyo})\n'
+        'Precio: ${pieza.precio.toStringAsFixed(2)} €\n'
+        'Estado: ${pieza.estado}\n'
+        'Desguace: ${pieza.desguaceNombre}';
+    Share.share(texto, subject: pieza.nombre);
   }
 
   Widget _chip(String label, Color color) => Chip(

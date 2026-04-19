@@ -4,6 +4,7 @@ import '../search/search_screen.dart';
 import '../auth/login_screen.dart';
 import '../map/nearby_screen.dart';
 import '../../core/theme.dart';
+import '../../widgets/top_app_bar.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -11,9 +12,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(color: AppTheme.background),
-        child: SafeArea(
+      appBar: const TopAppBar(title: 'TodoPiezas'),
+      body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
             child: Column(
@@ -81,7 +81,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ),
-      ),
     );
   }
 }
