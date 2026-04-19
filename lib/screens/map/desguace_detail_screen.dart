@@ -6,6 +6,7 @@ import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../models/desguace.dart';
 import '../../services/api_service.dart';
+import '../../widgets/top_app_bar.dart';
 
 class DesguaceDetailScreen extends StatefulWidget {
   final Desguace desguace;
@@ -48,7 +49,7 @@ class _DesguaceDetailScreenState extends State<DesguaceDetailScreen> {
     final d = widget.desguace;
 
     return Scaffold(
-      appBar: AppBar(title: Text(d.nombre)),
+      appBar: TopAppBar(title: d.nombre),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

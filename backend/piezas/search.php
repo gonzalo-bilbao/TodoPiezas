@@ -34,6 +34,7 @@ try {
                 p.desguace_id,
                 d.nombre    AS desguace_nombre,
                 d.telefono  AS desguace_telefono,
+                d.whatsapp  AS desguace_whatsapp,
                 d.lat       AS desguace_lat,
                 d.lng       AS desguace_lng,
                 d.direccion AS desguace_direccion

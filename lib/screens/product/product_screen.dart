@@ -6,6 +6,7 @@ import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../models/pieza.dart';
 import '../../providers/favoritos_provider.dart';
+import '../../widgets/top_app_bar.dart';
 
 class ProductScreen extends StatelessWidget {
   final Pieza pieza;
@@ -18,9 +19,9 @@ class ProductScreen extends StatelessWidget {
     final esFav = favs.isFavorito(pieza.id);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(pieza.nombre),
-        actions: [
+      appBar: TopAppBar(
+        title: pieza.nombre,
+        extraActions: [
           IconButton(
             tooltip: esFav ? 'Quitar de favoritos' : 'Añadir a favoritos',
             icon: Icon(
@@ -139,6 +140,36 @@ class ProductScreen extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: (pieza.desguaceWhatsapp != null &&
+                              pieza.desguaceWhatsapp!.isNotEmpty)
+                          ? () {
+                              final num = pieza.desguaceWhatsapp!
+                                  .replaceAll(RegExp(r'[^0-9]'), '');
+                              final msg = Uri.encodeComponent(
+                                  'Hola, me interesa la pieza "${pieza.nombre}" (${pieza.marca} ${pieza.modelo}) que he visto en TodoPiezas.');
+                              launchUrl(
+                                Uri.parse('https://wa.me/$num?text=$msg'),
+                                mode: LaunchMode.externalApplication,
+                              );
+                            }
+                          : null,
+                      icon: const Icon(Icons.chat),
+                      label: Text(
+                        (pieza.desguaceWhatsapp != null &&
+                                pieza.desguaceWhatsapp!.isNotEmpty)
+                            ? 'WhatsApp'
+                            : 'WhatsApp (no disponible)',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF25D366),
+                        disabledBackgroundColor: Colors.grey[400],
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
                 ],

@@ -11,6 +11,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: const TopAppBar(title: 'TodoPiezas'),
       body: SafeArea(
@@ -26,7 +27,7 @@ class HomeScreen extends StatelessWidget {
                   style: GoogleFonts.exo2(
                     fontSize: 36,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.secondary,
+                    color: isDark ? Colors.white : AppTheme.secondary,
                     letterSpacing: 1,
                   ),
                 ),
@@ -35,7 +36,7 @@ class HomeScreen extends StatelessWidget {
                   'Tu desguace, en tu bolsillo',
                   style: GoogleFonts.inter(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: isDark ? Colors.grey[400] : Colors.grey[600],
                     letterSpacing: 0.5,
                   ),
                 ),
