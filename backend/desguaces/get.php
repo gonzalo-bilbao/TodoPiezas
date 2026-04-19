@@ -18,7 +18,7 @@ if ($id <= 0 || $id !== $auth['desguace_id']) {
 try {
     $db   = getDB();
     $stmt = $db->prepare(
-        'SELECT id, nombre, direccion, telefono, email, lat, lng, horario FROM desguaces WHERE id = ?'
+        'SELECT id, nombre, direccion, telefono, whatsapp, email, lat, lng, horario FROM desguaces WHERE id = ?'
     );
     $stmt->execute([$id]);
     $desguace = $stmt->fetch();

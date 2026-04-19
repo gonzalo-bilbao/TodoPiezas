@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 try {
     $db   = getDB();
     $stmt = $db->query(
-        'SELECT id, nombre, direccion, telefono, email, lat, lng, horario FROM desguaces'
+        'SELECT id, nombre, direccion, telefono, whatsapp, email, lat, lng, horario FROM desguaces'
     );
 
     jsonResponse($stmt->fetchAll());

@@ -14,6 +14,7 @@ class Pieza {
   final int desguaceId;
   final String desguaceNombre;
   final String desguaceTelefono;
+  final String? desguaceWhatsapp;
   final double desguaceLat;
   final double desguaceLng;
   final String desguaceDireccion;
@@ -35,6 +36,7 @@ class Pieza {
     required this.desguaceId,
     required this.desguaceNombre,
     required this.desguaceTelefono,
+    this.desguaceWhatsapp,
     required this.desguaceLat,
     required this.desguaceLng,
     required this.desguaceDireccion,
@@ -57,6 +59,7 @@ class Pieza {
         desguaceId: int.parse(json['desguace_id'].toString()),
         desguaceNombre: json['desguace_nombre'] ?? '',
         desguaceTelefono: json['desguace_telefono'] ?? '',
+        desguaceWhatsapp: json['desguace_whatsapp'],
         desguaceLat: double.parse(json['desguace_lat'].toString()),
         desguaceLng: double.parse(json['desguace_lng'].toString()),
         desguaceDireccion: json['desguace_direccion'] ?? '',

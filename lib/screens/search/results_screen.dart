@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme.dart';
 import '../../providers/search_provider.dart';
 import '../../widgets/pieza_card.dart';
+import '../../widgets/top_app_bar.dart';
 import '../map/map_screen.dart';
 import '../product/product_screen.dart';
 import '../../models/pieza.dart';
@@ -49,11 +50,9 @@ class _ResultsScreenState extends State<ResultsScreen> {
     final results = _applyFilters(provider.results);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          '${results.length} resultado${results.length != 1 ? 's' : ''}',
-        ),
-        actions: [
+      appBar: TopAppBar(
+        title: '${results.length} resultado${results.length != 1 ? 's' : ''}',
+        extraActions: [
           if (provider.results.isNotEmpty)
             IconButton(
               onPressed: () => Navigator.push(

@@ -113,6 +113,18 @@ class ApiService {
     if (res.statusCode != 200) throw Exception('Error al eliminar pieza');
   }
 
+  static Future<List<Pieza>> getPiezasByIds(List<int> ids) async {
+    if (ids.isEmpty) return [];
+    final res = await http.post(
+      Uri.parse('$_base/piezas/by_ids.php'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'ids': ids}),
+    );
+    if (res.statusCode != 200) throw Exception('Error al cargar piezas');
+    final List<dynamic> data = jsonDecode(res.body);
+    return data.map((e) => Pieza.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
   // ── DESGUACES ─────────────────────────────────────────────────────────────
 
   static Future<List<Desguace>> getDesguaces() async {

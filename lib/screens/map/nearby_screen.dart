@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import '../../core/theme.dart';
 import '../../models/desguace.dart';
 import '../../services/api_service.dart';
+import '../../widgets/top_app_bar.dart';
 import 'desguace_detail_screen.dart';
 
 class NearbyScreen extends StatefulWidget {
@@ -74,7 +75,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Desguaces cercanos')),
+      appBar: const TopAppBar(title: 'Desguaces cercanos'),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null

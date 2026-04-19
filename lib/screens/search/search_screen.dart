@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../providers/search_provider.dart';
+import '../../widgets/favoritos_list.dart';
+import '../../widgets/top_app_bar.dart';
 import 'results_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -40,9 +42,9 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Buscar Piezas'),
-        actions: [
+      appBar: TopAppBar(
+        title: 'Buscar Piezas',
+        extraActions: [
           TextButton(
             onPressed: () {
               provider.clearFilters();
@@ -58,6 +60,10 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _SectionHeader('Tus favoritas', Icons.favorite),
+            const SizedBox(height: 8),
+            const FavoritosList(),
+            const SizedBox(height: 24),
             _SectionHeader('Vehículo', Icons.directions_car_outlined),
             const SizedBox(height: 12),
             _dropdown(
@@ -208,7 +214,10 @@ class _SectionHeader extends StatelessWidget {
   const _SectionHeader(this.text, this.icon);
 
   @override
-  Widget build(BuildContext context) => Row(
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : AppTheme.secondary;
+    return Row(
         children: [
           Container(
             width: 4,
@@ -219,16 +228,17 @@ class _SectionHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          Icon(icon, size: 16, color: AppTheme.secondary),
+          Icon(icon, size: 16, color: textColor),
           const SizedBox(width: 6),
           Text(
             text,
             style: GoogleFonts.exo2(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: AppTheme.secondary,
+              color: textColor,
             ),
           ),
         ],
       );
+  }
 }
