@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS desguaces (
     nombre     VARCHAR(100)   NOT NULL,
     direccion  VARCHAR(200)   NOT NULL,
     telefono   VARCHAR(20)    NOT NULL,
+    whatsapp   VARCHAR(20)    NULL,
     email      VARCHAR(100)   UNIQUE NOT NULL,
     password   VARCHAR(255)   NOT NULL,
     lat        DECIMAL(10,8)  NOT NULL DEFAULT 40.41650000,
@@ -107,10 +108,11 @@ INSERT INTO desguaces (nombre, direccion, telefono, email, password, lat, lng, h
    39.46990000, -0.37630000, 'Lun-Vie 8:30-17:30, Sáb 9:00-14:00');
 
 INSERT INTO usuarios (nombre, email, password, telefono) VALUES
-  ('Carlos López',    'carlos@email.com',
-   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '600111222'),
-  ('María Fernández', 'maria@email.com',
-   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '600333444');
+  ('Carlos López',    'carlos@email.com',   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '600111222'),
+  ('María Fernández', 'maria@email.com',    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '600333444'),
+  ('Javier Ruiz',     'javier@email.com',   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '611222333'),
+  ('Laura Martínez',  'laura@email.com',    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '622444555'),
+  ('Pedro Sánchez',   'pedro@email.com',    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '633555666');
 
 INSERT INTO piezas (nombre, descripcion, precio, estado, color, stock, categoria, marca, modelo, anyo, desguace_id) VALUES
   -- Desguace 1 - El Motor (Madrid)
@@ -143,13 +145,6 @@ INSERT INTO piezas (nombre, descripcion, precio, estado, color, stock, categoria
   ('Catalizador',             'Sin roturas internas',                   85.00, 'Usado', 'Gris',    2, 'Motor',       'Toyota',     'Yaris',      2016, 3),
   ('Cuadro de instrumentos',  'Digital, todos los indicadores ok',     130.00, 'Usado', 'Negro',   1, 'Eléctrico',   'Ford',       'Mondeo',     2017, 3);
 
-INSERT INTO usuarios (nombre, email, password, telefono) VALUES
-  ('Carlos López',    'carlos@email.com',   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '600111222'),
-  ('María Fernández', 'maria@email.com',    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '600333444'),
-  ('Javier Ruiz',     'javier@email.com',   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '611222333'),
-  ('Laura Martínez',  'laura@email.com',    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '622444555'),
-  ('Pedro Sánchez',   'pedro@email.com',    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '633555666');
-
 INSERT INTO pedidos (usuario_id, pieza_id, desguace_id, estado, mensaje) VALUES
   (1,  1, 1, 'pendiente',   '¿Sigue disponible el alternador?'),
   (2, 17, 3, 'confirmado',  'Reservo el faro, paso esta semana.'),
@@ -161,3 +156,31 @@ INSERT INTO pedidos (usuario_id, pieza_id, desguace_id, estado, mensaje) VALUES
   (3, 22, 3, 'entregado',   'El volante llegó en perfecto estado.'),
   (1, 15, 2, 'cancelado',   'Ya encontré uno más cerca, disculpa.'),
   (4,  8, 1, 'confirmado',  'Reservo el asiento, voy el viernes.');
+
+-- ============================================================
+-- Tabla: usuarios_particulares  (clientes que usan la app)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS usuarios_particulares (
+  id         INT          PRIMARY KEY AUTO_INCREMENT,
+  email      VARCHAR(100) NOT NULL UNIQUE,
+  password   VARCHAR(255) NOT NULL,
+  nombre     VARCHAR(100) NOT NULL,
+  foto       VARCHAR(255) NULL,
+  marca      VARCHAR(50)  NULL,
+  modelo     VARCHAR(50)  NULL,
+  anyo       INT          NULL,
+  created_at TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ============================================================
+-- Tabla: favoritos  (piezas guardadas por un usuario particular)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS favoritos (
+  id         INT       PRIMARY KEY AUTO_INCREMENT,
+  usuario_id INT       NOT NULL,
+  pieza_id   INT       NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_fav (usuario_id, pieza_id),
+  FOREIGN KEY (usuario_id) REFERENCES usuarios_particulares(id) ON DELETE CASCADE,
+  FOREIGN KEY (pieza_id)   REFERENCES piezas(id)                ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
