@@ -1,11 +1,2 @@
-# CORS headers (necesita mod_headers habilitado en httpd.conf)
-<IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
-</IfModule>
-
-# Responder a las peticiones OPTIONS (preflight) con 200 OK
-RewriteEngine On
-RewriteCond %{REQUEST_METHOD} OPTIONS
-RewriteRule ^(.*)$ $1 [R=200,L]
+# CORS gestionado en PHP (config/helpers.php)
+# Este archivo se deja vacío a propósito para no duplicar cabeceras.
