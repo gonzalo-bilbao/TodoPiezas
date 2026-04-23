@@ -6,6 +6,13 @@ class AppConstants {
       ? 'http://localhost/todopiezas'
       : 'http://10.0.2.2/todopiezas';
 
+  /// Construye la URL de una imagen pasando por el proxy PHP para
+  /// garantizar cabeceras CORS (independiente de mod_headers).
+  static String imageUrl(String? relativePath) {
+    if (relativePath == null || relativePath.isEmpty) return '';
+    return '$apiBaseUrl/piezas/image.php?path=$relativePath';
+  }
+
   static const List<String> marcas = [
     'Seat', 'Volkswagen', 'Ford', 'Renault', 'Peugeot',
     'BMW', 'Mercedes', 'Audi', 'Toyota', 'Hyundai',

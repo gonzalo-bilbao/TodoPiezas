@@ -101,7 +101,7 @@ class PiezaCard extends StatelessWidget {
   Widget _buildImage() {
     if (pieza.imagen != null && pieza.imagen!.isNotEmpty) {
       return Image.network(
-        '${AppConstants.apiBaseUrl}/${pieza.imagen}',
+        AppConstants.imageUrl(pieza.imagen),
         fit: BoxFit.cover,
         width: 80,
         height: 80,

@@ -1,0 +1,6 @@
+# Permitir CORS en las imágenes servidas estáticamente
+<IfModule mod_headers.c>
+    <FilesMatch "\.(jpg|jpeg|png|webp|gif)$">
+        Header set Access-Control-Allow-Origin "*"
+    </FilesMatch>
+</IfModule>

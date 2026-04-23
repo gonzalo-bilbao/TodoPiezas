@@ -101,7 +101,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     if (_fotoBytes != null) {
       avatar = MemoryImage(_fotoBytes!);
     } else if (u.foto != null && u.foto!.isNotEmpty) {
-      avatar = NetworkImage('${AppConstants.apiBaseUrl}/${u.foto}');
+      avatar = NetworkImage(AppConstants.imageUrl(u.foto));
     }
 
     return Scaffold(

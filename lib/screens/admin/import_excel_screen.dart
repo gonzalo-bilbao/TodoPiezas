@@ -30,11 +30,24 @@ class ImportExcelScreen extends StatefulWidget {
 
 class _ImportExcelScreenState extends State<ImportExcelScreen> {
   List<String> _columnasExcel = [];
-  List<List<dynamic>> _filas = [];
+  List<List<String?>> _filas = [];
   // mapeo: columna Excel -> campo destino (o null para ignorar)
   final Map<int, String?> _mapeo = {};
   bool _loading = false;
   String? _filename;
+
+  /// Extrae el valor de una celda de Excel 4.x (sealed class CellValue).
+  String? _cellText(Data? cell) {
+    if (cell == null) return null;
+    final v = cell.value;
+    if (v == null) return null;
+    if (v is TextCellValue) return v.value.text;
+    if (v is IntCellValue) return v.value.toString();
+    if (v is DoubleCellValue) return v.value.toString();
+    if (v is BoolCellValue) return v.value.toString();
+    if (v is DateCellValue) return '${v.year}-${v.month}-${v.day}';
+    return v.toString();
+  }
 
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -48,15 +61,19 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
     _filename = result.files.single.name;
     try {
       final excel = Excel.decodeBytes(bytes);
-      final sheet = excel.tables[excel.tables.keys.first]!;
-      if (sheet.rows.isEmpty) {
+      if (excel.tables.isEmpty) {
+        _showError('El Excel no tiene hojas');
+        return;
+      }
+      final sheet = excel.tables[excel.tables.keys.first];
+      if (sheet == null || sheet.rows.isEmpty) {
         _showError('El archivo está vacío');
         return;
       }
       // Primera fila = cabecera
-      final header = sheet.rows.first.map((c) => c?.value?.toString() ?? '').toList();
+      final header = sheet.rows.first.map((c) => _cellText(c) ?? '').toList();
       final datos = sheet.rows.skip(1).map(
-        (row) => row.map((c) => c?.value).toList(),
+        (row) => row.map(_cellText).toList(),
       ).toList();
 
       setState(() {
@@ -97,9 +114,9 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
       final p = <String, dynamic>{};
       _mapeo.forEach((colIdx, campo) {
         if (campo == null || colIdx >= fila.length) return;
-        p[campo] = fila[colIdx]?.toString();
+        p[campo] = fila[colIdx];
       });
-      if ((p['nombre'] ?? '').toString().isNotEmpty) {
+      if ((p['nombre'] ?? '').toString().trim().isNotEmpty) {
         piezas.add(p);
       }
     }
