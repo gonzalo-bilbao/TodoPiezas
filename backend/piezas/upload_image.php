@@ -26,11 +26,11 @@ if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
 }
 
-$filename = uniqid('pieza_', true) . '.' . $ext;
+$filename = 'pieza_' . uniqid() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
 $destPath = $uploadDir . $filename;
 
 if (!move_uploaded_file($file['tmp_name'], $destPath)) {
-    jsonError('Error al guardar la imagen', 500);
+    jsonError('Error al guardar la imagen (revisa permisos de uploads/piezas/)', 500);
 }
 
 jsonResponse(['imagen' => 'uploads/piezas/' . $filename]);

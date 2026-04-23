@@ -95,17 +95,6 @@ class AboutScreen extends StatelessWidget {
               nombre: 'Alberto Luque',
               rol: 'Frontend y diseño',
             ),
-            const SizedBox(height: 32),
-            Center(
-              child: Text(
-                'Junio 2026 · IES Alonso de Avellaneda',
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  color: Colors.grey,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
           ],
         ),
       ),

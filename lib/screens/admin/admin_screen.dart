@@ -161,7 +161,7 @@ class _AdminScreenState extends State<AdminScreen> {
                         // Barra de filtros
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           child: Row(
                             children: [
                               Expanded(
