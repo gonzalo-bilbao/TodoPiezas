@@ -167,7 +167,10 @@ class ProductScreen extends StatelessWidget {
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF25D366),
+                        foregroundColor: Colors.white,
                         disabledBackgroundColor: Colors.grey[400],
+                        disabledForegroundColor: Colors.white,
+                        textStyle: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),

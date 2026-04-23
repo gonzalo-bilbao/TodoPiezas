@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../providers/search_provider.dart';
+import '../../providers/user_provider.dart';
 import '../../widgets/favoritos_list.dart';
 import '../../widgets/top_app_bar.dart';
 import 'results_screen.dart';
@@ -64,6 +65,50 @@ class _SearchScreenState extends State<SearchScreen> {
             const SizedBox(height: 8),
             const FavoritosList(),
             const SizedBox(height: 24),
+            // Botón "Ver piezas de tu coche" si el usuario tiene vehículo
+            Builder(builder: (context) {
+              final user = context.watch<UserProvider>();
+              final u = user.usuario;
+              if (u == null || u.marca == null || u.marca!.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      provider.clearFilters();
+                      provider.setFilter('marca', u.marca);
+                      if (u.modelo != null && u.modelo!.isNotEmpty) {
+                        provider.setFilter('modelo', u.modelo);
+                        _modeloController.text = u.modelo!;
+                      }
+                      if (u.anyo != null) {
+                        provider.setFilter('anyo', u.anyo);
+                        _anyoController.text = u.anyo.toString();
+                      }
+                      await provider.search();
+                      if (provider.error == null && context.mounted) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ResultsScreen()),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.directions_car),
+                    label: Text(
+                      'Ver piezas de tu ${u.marca}${u.modelo != null && u.modelo!.isNotEmpty ? " ${u.modelo}" : ""}',
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      backgroundColor: AppTheme.secondary,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
+              );
+            }),
             _SectionHeader('Vehículo', Icons.directions_car_outlined),
             const SizedBox(height: 12),
             _dropdown(
