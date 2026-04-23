@@ -106,7 +106,7 @@ class _FavCard extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                   child: pieza.imagen != null && pieza.imagen!.isNotEmpty
                       ? Image.network(
-                          '${AppConstants.apiBaseUrl}/${pieza.imagen}',
+                          AppConstants.imageUrl(pieza.imagen),
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => Container(
                             color: Colors.grey[200],

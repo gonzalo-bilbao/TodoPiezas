@@ -243,7 +243,7 @@ class _PiezasTable extends StatelessWidget {
                     height: 36,
                     child: imagen != null && imagen.isNotEmpty
                         ? Image.network(
-                            '${AppConstants.apiBaseUrl}/$imagen',
+                            AppConstants.imageUrl(imagen),
                             fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) =>
                                 Container(color: Colors.grey[200],

@@ -50,7 +50,7 @@ class ProductScreen extends StatelessWidget {
                   ? Padding(
                       padding: const EdgeInsets.all(8),
                       child: Image.network(
-                        '${AppConstants.apiBaseUrl}/${pieza.imagen}',
+                        AppConstants.imageUrl(pieza.imagen),
                         fit: BoxFit.contain,
                         errorBuilder: (_, __, ___) =>
                             const Icon(Icons.car_repair, size: 80, color: Colors.grey),

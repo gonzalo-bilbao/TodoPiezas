@@ -270,7 +270,7 @@ class _AdminScreenState extends State<AdminScreen> {
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: Image.network(
-                    '${AppConstants.apiBaseUrl}/${p.imagen}',
+                    AppConstants.imageUrl(p.imagen),
                     width: 44,
                     height: 44,
                     fit: BoxFit.cover,
