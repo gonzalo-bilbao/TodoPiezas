@@ -5,7 +5,8 @@ import '../services/api_service.dart';
 
 class StatsCard extends StatefulWidget {
   final int desguaceId;
-  const StatsCard({super.key, required this.desguaceId});
+  final VoidCallback? onSinStockTap;
+  const StatsCard({super.key, required this.desguaceId, this.onSinStockTap});
 
   @override
   State<StatsCard> createState() => _StatsCardState();
@@ -58,6 +59,7 @@ class _StatsCardState extends State<StatsCard> {
                 label: 'Sin stock',
                 value: '${_stats!['sin_stock']}',
                 color: Colors.red[400]!,
+                onTap: widget.onSinStockTap,
               )),
             ],
           ),
@@ -90,18 +92,23 @@ class _StatBox extends StatelessWidget {
   final String label;
   final String value;
   final Color color;
+  final VoidCallback? onTap;
 
   const _StatBox({
     required this.icon,
     required this.label,
     required this.value,
     required this.color,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Padding(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
@@ -137,6 +144,7 @@ class _StatBox extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

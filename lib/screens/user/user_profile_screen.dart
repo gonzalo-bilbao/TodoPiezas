@@ -7,7 +7,9 @@ import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../providers/user_provider.dart';
 import '../../providers/favoritos_provider.dart';
+import '../../providers/vehiculos_provider.dart';
 import '../../services/api_service.dart';
+import 'mis_vehiculos_screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -18,9 +20,6 @@ class UserProfileScreen extends StatefulWidget {
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
   final _nombre = TextEditingController();
-  final _modelo = TextEditingController();
-  final _anyo = TextEditingController();
-  String? _marca;
   Uint8List? _fotoBytes;
   String? _fotoFilename;
 
@@ -30,17 +29,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     final u = context.read<UserProvider>().usuario;
     if (u != null) {
       _nombre.text = u.nombre;
-      _modelo.text = u.modelo ?? '';
-      _anyo.text = u.anyo?.toString() ?? '';
-      _marca = u.marca;
     }
   }
 
   @override
   void dispose() {
     _nombre.dispose();
-    _modelo.dispose();
-    _anyo.dispose();
     super.dispose();
   }
 
@@ -69,9 +63,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       }
       final ok = await user.updateProfile(
         nombre: _nombre.text.trim(),
-        marca: _marca,
-        modelo: _modelo.text.trim().isEmpty ? null : _modelo.text.trim(),
-        anyo: int.tryParse(_anyo.text),
         foto: fotoPath,
       );
       if (!mounted) return;
@@ -88,6 +79,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Future<void> _logout() async {
     await context.read<UserProvider>().logout();
     await context.read<FavoritosProvider>().setToken(null);
+    if (mounted) context.read<VehiculosProvider>().setToken(null);
     if (mounted) Navigator.pop(context);
   }
 
@@ -172,45 +164,45 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 prefixIcon: Icon(Icons.person_outline),
               ),
             ),
-            const SizedBox(height: 20),
-            Text('Mi vehículo', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              value: _marca,
-              decoration: const InputDecoration(
-                labelText: 'Marca',
-                prefixIcon: Icon(Icons.directions_car),
-              ),
-              items: [
-                const DropdownMenuItem<String>(value: null, child: Text('—')),
-                ...AppConstants.marcas.map(
-                  (m) => DropdownMenuItem(value: m, child: Text(m)),
-                ),
-              ],
-              onChanged: (v) => setState(() => _marca = v),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _modelo,
-              decoration: const InputDecoration(
-                labelText: 'Modelo',
-                prefixIcon: Icon(Icons.airline_seat_recline_normal),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _anyo,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Año',
-                prefixIcon: Icon(Icons.calendar_today),
-              ),
-            ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: user.loading ? null : _save,
               icon: const Icon(Icons.save),
               label: const Text('Guardar cambios'),
+            ),
+            const SizedBox(height: 24),
+            Text('Mis vehículos', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Builder(builder: (ctx) {
+              final vp = ctx.watch<VehiculosProvider>();
+              if (vp.vehiculos.isEmpty) {
+                return Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.directions_car_outlined),
+                    title: const Text('Aún no tienes vehículos'),
+                    subtitle: const Text('Añade el primero para personalizar tu búsqueda'),
+                  ),
+                );
+              }
+              return Column(
+                children: vp.vehiculos.take(3).map((v) => Card(
+                  child: ListTile(
+                    dense: true,
+                    leading: const Icon(Icons.directions_car, color: AppTheme.primary),
+                    title: Text(v.displayName),
+                    subtitle: Text('${v.marca} ${v.modelo}'),
+                  ),
+                )).toList(),
+              );
+            }),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MisVehiculosScreen()),
+              ),
+              icon: const Icon(Icons.directions_car),
+              label: const Text('Gestionar vehículos'),
             ),
           ],
         ),

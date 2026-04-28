@@ -18,24 +18,17 @@ try {
     $stmt = $db->prepare(
         'UPDATE usuarios_particulares SET
             nombre = COALESCE(NULLIF(?, ""), nombre),
-            marca  = ?,
-            modelo = ?,
-            anyo   = ?,
             foto   = COALESCE(NULLIF(?, ""), foto)
          WHERE id = ?'
     );
     $stmt->execute([
         $input['nombre'] ?? '',
-        $input['marca']  ?? null,
-        $input['modelo'] ?? null,
-        $input['anyo']   ?? null,
         $input['foto']   ?? '',
         $userId,
     ]);
 
     $stmt = $db->prepare(
-        'SELECT id, email, nombre, foto, marca, modelo, anyo
-         FROM usuarios_particulares WHERE id = ?'
+        'SELECT id, email, nombre, foto FROM usuarios_particulares WHERE id = ?'
     );
     $stmt->execute([$userId]);
     $u = $stmt->fetch();
@@ -45,9 +38,6 @@ try {
         'email'  => $u['email'],
         'nombre' => $u['nombre'],
         'foto'   => $u['foto'],
-        'marca'  => $u['marca'],
-        'modelo' => $u['modelo'],
-        'anyo'   => $u['anyo'] !== null ? (int)$u['anyo'] : null,
     ]);
 } catch (PDOException $e) {
     jsonError('Error del servidor', 500);

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme.dart';
 import '../../providers/user_provider.dart';
 import '../../providers/favoritos_provider.dart';
+import '../../providers/vehiculos_provider.dart';
 import 'user_register_screen.dart';
 
 class UserLoginScreen extends StatefulWidget {
@@ -32,6 +33,7 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
     if (!mounted) return;
     if (ok) {
       await context.read<FavoritosProvider>().setToken(user.token);
+      if (mounted) context.read<VehiculosProvider>().setToken(user.token);
       if (mounted) Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

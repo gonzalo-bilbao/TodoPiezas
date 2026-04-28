@@ -16,6 +16,10 @@ class UserProvider extends ChangeNotifier {
     _loadFromPrefs();
   }
 
+  /// Token leído desde SharedPreferences en el arranque (si había sesión).
+  /// Lo expone para que main/splash pueda inicializar otros providers.
+  String? initialToken;
+
   Future<void> _loadFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     final t = prefs.getString('user_token');
@@ -24,6 +28,7 @@ class UserProvider extends ChangeNotifier {
       try {
         usuario = UsuarioParticular.fromJson(jsonDecode(data));
         token = t;
+        initialToken = t;
         notifyListeners();
       } catch (_) {}
     }
@@ -38,9 +43,6 @@ class UserProvider extends ChangeNotifier {
         'email': usuario!.email,
         'nombre': usuario!.nombre,
         'foto': usuario!.foto,
-        'marca': usuario!.marca,
-        'modelo': usuario!.modelo,
-        'anyo': usuario!.anyo,
       }));
     } else {
       await prefs.remove('user_token');
@@ -52,9 +54,6 @@ class UserProvider extends ChangeNotifier {
     required String email,
     required String password,
     required String nombre,
-    String? marca,
-    String? modelo,
-    int? anyo,
   }) async {
     loading = true;
     error = null;
@@ -64,9 +63,6 @@ class UserProvider extends ChangeNotifier {
         email: email,
         password: password,
         nombre: nombre,
-        marca: marca,
-        modelo: modelo,
-        anyo: anyo,
       );
       token = data['token'] as String;
       usuario = UsuarioParticular.fromJson(data['usuario']);
@@ -111,9 +107,6 @@ class UserProvider extends ChangeNotifier {
 
   Future<bool> updateProfile({
     String? nombre,
-    String? marca,
-    String? modelo,
-    int? anyo,
     String? foto,
   }) async {
     if (!isLoggedIn) return false;
@@ -124,9 +117,6 @@ class UserProvider extends ChangeNotifier {
       final data = await ApiService.updateUser(
         token: token!,
         nombre: nombre,
-        marca: marca,
-        modelo: modelo,
-        anyo: anyo,
         foto: foto,
       );
       usuario = UsuarioParticular.fromJson(data);

@@ -12,9 +12,6 @@ $input = getJsonInput();
 $email    = trim($input['email']    ?? '');
 $password = $input['password'] ?? '';
 $nombre   = trim($input['nombre']   ?? '');
-$marca    = $input['marca']   ?? null;
-$modelo   = $input['modelo']  ?? null;
-$anyo     = $input['anyo']    ?? null;
 
 if ($email === '' || $password === '' || $nombre === '') {
     jsonError('Faltan campos obligatorios');
@@ -29,7 +26,6 @@ if (strlen($password) < 4) {
 try {
     $db = getDB();
 
-    // Comprobar que el email no exista
     $stmt = $db->prepare('SELECT id FROM usuarios_particulares WHERE email = ?');
     $stmt->execute([$email]);
     if ($stmt->fetch()) {
@@ -39,10 +35,10 @@ try {
     $hash = password_hash($password, PASSWORD_DEFAULT);
 
     $stmt = $db->prepare(
-        'INSERT INTO usuarios_particulares (email, password, nombre, marca, modelo, anyo)
-         VALUES (?, ?, ?, ?, ?, ?)'
+        'INSERT INTO usuarios_particulares (email, password, nombre)
+         VALUES (?, ?, ?)'
     );
-    $stmt->execute([$email, $hash, $nombre, $marca, $modelo, $anyo]);
+    $stmt->execute([$email, $hash, $nombre]);
 
     $id = (int)$db->lastInsertId();
     $token = generateUserToken($id);
@@ -54,9 +50,6 @@ try {
             'email'  => $email,
             'nombre' => $nombre,
             'foto'   => null,
-            'marca'  => $marca,
-            'modelo' => $modelo,
-            'anyo'   => $anyo,
         ],
     ], 201);
 } catch (PDOException $e) {
