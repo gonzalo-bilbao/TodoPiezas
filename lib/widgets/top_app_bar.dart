@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../core/constants.dart';
+import '../core/theme.dart';
 import '../providers/theme_provider.dart';
 import '../providers/user_provider.dart';
 import '../screens/info/about_screen.dart';
@@ -38,21 +40,85 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
             MaterialPageRoute(builder: (_) => const AboutScreen()),
           ),
         ),
-        // Usuario
-        IconButton(
-          tooltip: user.isLoggedIn ? 'Mi perfil' : 'Iniciar sesión',
-          icon: Icon(user.isLoggedIn ? Icons.account_circle : Icons.person_outline),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => user.isLoggedIn
-                  ? const UserProfileScreen()
-                  : const UserLoginScreen(),
+        // Usuario (avatar con punto verde si está logueado)
+        Padding(
+          padding: const EdgeInsets.only(right: 12, left: 4),
+          child: Material(
+            color: Colors.transparent,
+            shape: const CircleBorder(),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => user.isLoggedIn
+                      ? const UserProfileScreen()
+                      : const UserLoginScreen(),
+                ),
+              ),
+              child: Tooltip(
+                message: user.isLoggedIn
+                    ? 'Sesión iniciada: ${user.usuario?.nombre ?? ""}'
+                    : 'Iniciar sesión',
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    if (user.isLoggedIn)
+                      _LoggedAvatar(user: user)
+                    else
+                      const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Icon(Icons.person_outline),
+                      ),
+                    if (user.isLoggedIn)
+                      Positioned(
+                        right: 2, bottom: 2,
+                        child: Container(
+                          width: 10, height: 10,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 1.5),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
-        const SizedBox(width: 8),
       ],
+    );
+  }
+}
+
+class _LoggedAvatar extends StatelessWidget {
+  final UserProvider user;
+  const _LoggedAvatar({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    final u = user.usuario!;
+    final inicial = u.nombre.isNotEmpty ? u.nombre[0].toUpperCase() : '?';
+    final hasFoto = u.foto != null && u.foto!.isNotEmpty;
+    return Padding(
+      padding: const EdgeInsets.all(6),
+      child: CircleAvatar(
+        radius: 14,
+        backgroundColor: AppTheme.primary,
+        backgroundImage: hasFoto ? NetworkImage(AppConstants.imageUrl(u.foto)) : null,
+        child: hasFoto
+            ? null
+            : Text(
+                inicial,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
+      ),
     );
   }
 }

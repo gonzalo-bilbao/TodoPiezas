@@ -19,7 +19,7 @@ if ($email === '' || $password === '') {
 try {
     $db = getDB();
     $stmt = $db->prepare(
-        'SELECT id, email, password, nombre, foto, marca, modelo, anyo
+        'SELECT id, email, password, nombre, foto
          FROM usuarios_particulares WHERE email = ?'
     );
     $stmt->execute([$email]);
@@ -38,9 +38,6 @@ try {
             'email'  => $user['email'],
             'nombre' => $user['nombre'],
             'foto'   => $user['foto'],
-            'marca'  => $user['marca'],
-            'modelo' => $user['modelo'],
-            'anyo'   => $user['anyo'] !== null ? (int)$user['anyo'] : null,
         ],
     ]);
 } catch (PDOException $e) {

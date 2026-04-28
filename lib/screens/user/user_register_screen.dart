@@ -5,6 +5,7 @@ import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../providers/user_provider.dart';
 import '../../providers/favoritos_provider.dart';
+import '../../providers/vehiculos_provider.dart';
 
 class UserRegisterScreen extends StatefulWidget {
   const UserRegisterScreen({super.key});
@@ -18,17 +19,12 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
   final _email = TextEditingController();
   final _pass = TextEditingController();
   final _nombre = TextEditingController();
-  final _modelo = TextEditingController();
-  final _anyo = TextEditingController();
-  String? _marca;
 
   @override
   void dispose() {
     _email.dispose();
     _pass.dispose();
     _nombre.dispose();
-    _modelo.dispose();
-    _anyo.dispose();
     super.dispose();
   }
 
@@ -39,13 +35,11 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
       email: _email.text.trim(),
       password: _pass.text,
       nombre: _nombre.text.trim(),
-      marca: _marca,
-      modelo: _modelo.text.trim().isEmpty ? null : _modelo.text.trim(),
-      anyo: int.tryParse(_anyo.text),
     );
     if (!mounted) return;
     if (ok) {
       await context.read<FavoritosProvider>().setToken(user.token);
+      if (mounted) context.read<VehiculosProvider>().setToken(user.token);
       if (mounted) {
         Navigator.popUntil(context, (r) => r.isFirst || r.settings.name == '/home');
       }
@@ -113,39 +107,10 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
-              Text('Tu vehículo (opcional)', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                value: _marca,
-                decoration: const InputDecoration(
-                  labelText: 'Marca',
-                  prefixIcon: Icon(Icons.directions_car),
-                ),
-                items: [
-                  const DropdownMenuItem<String>(value: null, child: Text('—')),
-                  ...AppConstants.marcas.map(
-                    (m) => DropdownMenuItem(value: m, child: Text(m)),
-                  ),
-                ],
-                onChanged: (v) => setState(() => _marca = v),
-              ),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _modelo,
-                decoration: const InputDecoration(
-                  labelText: 'Modelo',
-                  prefixIcon: Icon(Icons.airline_seat_recline_normal),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _anyo,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Año',
-                  prefixIcon: Icon(Icons.calendar_today),
-                ),
+              const Text(
+                'Podrás añadir tus vehículos después desde tu perfil.',
+                style: TextStyle(color: Colors.grey, fontSize: 12),
               ),
               const SizedBox(height: 24),
               ElevatedButton(

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../models/desguace.dart';
+import '../../providers/map_style_provider.dart';
 import '../../services/api_service.dart';
 import '../../widgets/top_app_bar.dart';
 
@@ -47,6 +49,7 @@ class _DesguaceDetailScreenState extends State<DesguaceDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final d = widget.desguace;
+    final mapStyle = context.watch<MapStyleProvider>().current;
 
     return Scaffold(
       appBar: TopAppBar(title: d.nombre),
@@ -67,7 +70,8 @@ class _DesguaceDetailScreenState extends State<DesguaceDetailScreen> {
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    urlTemplate: mapStyle.urlTemplate,
+                    subdomains: mapStyle.subdomains ?? const [],
                     userAgentPackageName: 'com.todopiezas.todopiezas_app',
                   ),
                   MarkerLayer(markers: [

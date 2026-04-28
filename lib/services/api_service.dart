@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import '../core/constants.dart';
 import '../models/pieza.dart';
 import '../models/desguace.dart';
+import '../models/vehiculo.dart';
 
 class ApiService {
   static String get _base => AppConstants.apiBaseUrl;
@@ -228,9 +229,6 @@ class ApiService {
     required String email,
     required String password,
     required String nombre,
-    String? marca,
-    String? modelo,
-    int? anyo,
   }) async {
     final res = await http.post(
       Uri.parse('$_base/usuarios/register.php'),
@@ -239,9 +237,6 @@ class ApiService {
         'email': email,
         'password': password,
         'nombre': nombre,
-        if (marca != null) 'marca': marca,
-        if (modelo != null) 'modelo': modelo,
-        if (anyo != null) 'anyo': anyo,
       }),
     );
     final data = jsonDecode(res.body) as Map<String, dynamic>;
@@ -268,9 +263,6 @@ class ApiService {
   static Future<Map<String, dynamic>> updateUser({
     required String token,
     String? nombre,
-    String? marca,
-    String? modelo,
-    int? anyo,
     String? foto,
   }) async {
     final res = await http.put(
@@ -281,9 +273,6 @@ class ApiService {
       },
       body: jsonEncode({
         if (nombre != null) 'nombre': nombre,
-        if (marca != null) 'marca': marca,
-        if (modelo != null) 'modelo': modelo,
-        if (anyo != null) 'anyo': anyo,
         if (foto != null) 'foto': foto,
       }),
     );
@@ -339,6 +328,77 @@ class ApiService {
       },
       body: jsonEncode({'pieza_id': piezaId}),
     );
+  }
+
+  // ── VEHÍCULOS DEL USUARIO ─────────────────────────────────────────────────
+
+  static Future<List<Vehiculo>> getVehiculos(String token) async {
+    final res = await http.get(
+      Uri.parse('$_base/vehiculos/list.php'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (res.statusCode != 200) throw Exception('Error al cargar vehículos');
+    final List<dynamic> data = jsonDecode(res.body);
+    return data.map((e) => Vehiculo.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  static Future<Vehiculo> createVehiculo(String token, {
+    String? alias,
+    required String marca,
+    required String modelo,
+    int? anyo,
+  }) async {
+    final res = await http.post(
+      Uri.parse('$_base/vehiculos/create.php'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        if (alias != null) 'alias': alias,
+        'marca': marca,
+        'modelo': modelo,
+        if (anyo != null) 'anyo': anyo,
+      }),
+    );
+    final data = jsonDecode(res.body);
+    if (res.statusCode != 201 && res.statusCode != 200) {
+      throw Exception(data['message'] ?? 'Error al crear vehículo');
+    }
+    return Vehiculo.fromJson(data);
+  }
+
+  static Future<void> updateVehiculo(String token, int id, {
+    String? alias,
+    required String marca,
+    required String modelo,
+    int? anyo,
+  }) async {
+    final res = await http.put(
+      Uri.parse('$_base/vehiculos/update.php?id=$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'alias': alias ?? '',
+        'marca': marca,
+        'modelo': modelo,
+        if (anyo != null) 'anyo': anyo,
+      }),
+    );
+    if (res.statusCode != 200) {
+      final data = jsonDecode(res.body);
+      throw Exception(data['message'] ?? 'Error al actualizar');
+    }
+  }
+
+  static Future<void> deleteVehiculo(String token, int id) async {
+    final res = await http.delete(
+      Uri.parse('$_base/vehiculos/delete.php?id=$id'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (res.statusCode != 200) throw Exception('Error al eliminar');
   }
 
   // ── ESTADÍSTICAS DESGUACE ─────────────────────────────────────────────────

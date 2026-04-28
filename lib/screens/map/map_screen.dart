@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 import '../../core/theme.dart';
 import '../../models/pieza.dart';
+import '../../providers/map_style_provider.dart';
+import '../../widgets/map_style_button.dart';
 import '../product/product_screen.dart';
 
 class MapScreen extends StatefulWidget {
@@ -32,6 +35,7 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mapStyle = context.watch<MapStyleProvider>().current;
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.piezas.length} desguace${widget.piezas.length != 1 ? 's' : ''}'),
@@ -46,8 +50,8 @@ class _MapScreenState extends State<MapScreen> {
             ),
             children: [
               TileLayer(
-                urlTemplate:
-                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlTemplate: mapStyle.urlTemplate,
+                subdomains: mapStyle.subdomains ?? const [],
                 userAgentPackageName: 'com.todopiezas.todopiezas_app',
               ),
               MarkerLayer(
@@ -70,6 +74,10 @@ class _MapScreenState extends State<MapScreen> {
                     .toList(),
               ),
             ],
+          ),
+          const Positioned(
+            top: 16, right: 16,
+            child: MapStyleButton(),
           ),
           // Popup de pieza seleccionada
           if (_selected != null)

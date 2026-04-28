@@ -157,7 +157,10 @@ class _AdminScreenState extends State<AdminScreen> {
                   : Column(
                       children: [
                         // Estadísticas
-                        StatsCard(desguaceId: auth.desguaceId!),
+                        StatsCard(
+                          desguaceId: auth.desguaceId!,
+                          onSinStockTap: () => setState(() => _filterEstado = 'sin_stock'),
+                        ),
                         // Barra de filtros
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -195,6 +198,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                     DropdownMenuItem<String>(value: null, child: Text('Todos', style: TextStyle(fontSize: 12))),
                                     DropdownMenuItem(value: 'Nuevo', child: Text('Nuevo', style: TextStyle(fontSize: 12))),
                                     DropdownMenuItem(value: 'Usado', child: Text('Usado', style: TextStyle(fontSize: 12))),
+                                    DropdownMenuItem(value: 'sin_stock', child: Text('Sin stock', style: TextStyle(fontSize: 12, color: Colors.red))),
                                   ],
                                   onChanged: (v) => setState(() => _filterEstado = v),
                                 ),
@@ -247,7 +251,11 @@ class _AdminScreenState extends State<AdminScreen> {
       list = list.where((p) => p.categoria == _filterCategoria).toList();
     }
     if (_filterEstado != null) {
-      list = list.where((p) => p.estado == _filterEstado).toList();
+      if (_filterEstado == 'sin_stock') {
+        list = list.where((p) => p.stock == 0).toList();
+      } else {
+        list = list.where((p) => p.estado == _filterEstado).toList();
+      }
     }
     switch (_sortBy) {
       case 'precio_asc':
