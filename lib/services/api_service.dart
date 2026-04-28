@@ -186,22 +186,6 @@ class ApiService {
     return data['imagen'] as String;
   }
 
-  // ── IMPORTAR SQL ──────────────────────────────────────────────────────────
-
-  static Future<Map<String, dynamic>> importSql(
-      int desguaceId, String sqlContent) async {
-    final res = await http.post(
-      Uri.parse('$_base/desguaces/import_sql.php'),
-      headers: _headers,
-      body: jsonEncode({'sql': sqlContent, 'desguace_id': desguaceId}),
-    );
-    final data = jsonDecode(res.body) as Map<String, dynamic>;
-    if (res.statusCode != 200) {
-      throw Exception(data['message'] ?? 'Error al importar SQL');
-    }
-    return data;
-  }
-
   // ── IMPORTAR EXCEL ────────────────────────────────────────────────────────
 
   static Future<Map<String, dynamic>> importExcel({

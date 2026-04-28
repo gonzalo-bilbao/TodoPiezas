@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'core/theme.dart';
 import 'providers/auth_provider.dart';
@@ -12,6 +13,9 @@ import 'providers/vehiculos_provider.dart';
 import 'screens/splash/splash_screen.dart';
 
 void main() {
+  // Permitir que GoogleFonts use las fuentes que vengan empaquetadas en
+  // pubspec si las hubiera y no descargue de internet en cada arranque.
+  GoogleFonts.config.allowRuntimeFetching = true;
   runApp(const TodoPiezasApp());
 }
 

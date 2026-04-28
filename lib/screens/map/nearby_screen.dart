@@ -24,6 +24,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
   Position? _userPos;
   bool _loading = true;
   String? _error;
+  bool _panelExpanded = false;
 
   @override
   void initState() {
@@ -150,90 +151,128 @@ class _NearbyScreenState extends State<NearbyScreen> {
                       top: 16, right: 16,
                       child: MapStyleButton(),
                     ),
-                    DraggableScrollableSheet(
-                      initialChildSize: 0.3,
-                      minChildSize: 0.1,
-                      maxChildSize: 0.85,
-                      snap: true,
-                      snapSizes: const [0.1, 0.3, 0.85],
-                      builder: (context, scrollController) {
-                        final isDark = Theme.of(context).brightness == Brightness.dark;
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
-                            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                            boxShadow: const [BoxShadow(blurRadius: 8, color: Colors.black26)],
-                          ),
-                          child: ListView.builder(
-                            controller: scrollController,
-                            physics: const ClampingScrollPhysics(),
-                            padding: EdgeInsets.zero,
-                            itemCount: _desguaces.length + 1, // +1 por la cabecera
-                            itemBuilder: (_, i) {
-                              if (i == 0) {
-                                return Column(
-                                  children: [
-                                    const SizedBox(height: 8),
-                                    Center(
-                                      child: Container(
-                                        width: 40, height: 4,
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[400],
-                                          borderRadius: BorderRadius.circular(2),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                      child: Row(
-                                        children: [
-                                          const Icon(Icons.store, size: 18, color: AppTheme.primary),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            '${_desguaces.length} desguaces cerca',
-                                            style: const TextStyle(fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const Divider(height: 1),
-                                  ],
-                                );
-                              }
-                              final d = _desguaces[i - 1];
-                              return ListTile(
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                                leading: Container(
-                                  width: 40, height: 40,
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.primary.withOpacity(0.1),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(Icons.store,
-                                      color: AppTheme.primary, size: 20),
-                                ),
-                                title: Text(d.nombre,
-                                    style: const TextStyle(fontWeight: FontWeight.w600)),
-                                subtitle: Text(d.direccion,
-                                    maxLines: 1, overflow: TextOverflow.ellipsis),
-                                trailing: d.distancia != null
-                                    ? Text('${d.distancia!.toStringAsFixed(1)} km',
-                                        style: const TextStyle(
-                                            color: AppTheme.primary,
-                                            fontWeight: FontWeight.bold))
-                                    : null,
-                                onTap: () => Navigator.push(context,
-                                    MaterialPageRoute(builder: (_) =>
-                                        DesguaceDetailScreen(desguace: d))),
-                              );
-                            },
-                          ),
-                        );
-                      },
+                    // Panel inferior con altura fija conmutable
+                    Positioned(
+                      left: 0, right: 0, bottom: 0,
+                      child: _DesguacesPanel(
+                        desguaces: _desguaces,
+                        expanded: _panelExpanded,
+                        onToggle: () => setState(() => _panelExpanded = !_panelExpanded),
+                        onTapDesguace: (d) => Navigator.push(context,
+                            MaterialPageRoute(builder: (_) =>
+                                DesguaceDetailScreen(desguace: d))),
+                      ),
                     ),
                   ],
                 ),
+    );
+  }
+}
+
+class _DesguacesPanel extends StatelessWidget {
+  final List<Desguace> desguaces;
+  final bool expanded;
+  final VoidCallback onToggle;
+  final void Function(Desguace) onTapDesguace;
+
+  const _DesguacesPanel({
+    required this.desguaces,
+    required this.expanded,
+    required this.onToggle,
+    required this.onTapDesguace,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final screenH = MediaQuery.of(context).size.height;
+    final height = expanded ? screenH * 0.7 : 220.0;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+      height: height,
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        boxShadow: const [BoxShadow(blurRadius: 8, color: Colors.black26)],
+      ),
+      child: Column(
+        children: [
+          // Cabecera con botón expandir
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onToggle,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 40, height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[400],
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Icon(Icons.store, size: 18, color: AppTheme.primary),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${desguaces.length} desguaces cerca',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const Spacer(),
+                        Icon(
+                          expanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
+                          color: AppTheme.primary,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const Divider(height: 1),
+          // Lista
+          Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              itemCount: desguaces.length,
+              itemBuilder: (_, i) {
+                final d = desguaces[i];
+                return ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  leading: Container(
+                    width: 40, height: 40,
+                    decoration: BoxDecoration(
+                      color: AppTheme.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.store,
+                        color: AppTheme.primary, size: 20),
+                  ),
+                  title: Text(d.nombre,
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: Text(d.direccion,
+                      maxLines: 1, overflow: TextOverflow.ellipsis),
+                  trailing: d.distancia != null
+                      ? Text('${d.distancia!.toStringAsFixed(1)} km',
+                          style: const TextStyle(
+                              color: AppTheme.primary,
+                              fontWeight: FontWeight.bold))
+                      : null,
+                  onTap: () => onTapDesguace(d),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
