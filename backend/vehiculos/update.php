@@ -24,14 +24,22 @@ try {
     if (!$row) jsonError('Vehículo no encontrado', 404);
     if ((int)$row['usuario_id'] !== $userId) jsonError('Sin permisos', 403);
 
+    // foto vacío = no cambiar; null explícito = borrar; valor = actualizar
     $stmt = $db->prepare(
-        'UPDATE vehiculos_usuario SET alias = ?, marca = ?, modelo = ?, anyo = ? WHERE id = ?'
+        'UPDATE vehiculos_usuario SET
+            alias  = ?,
+            marca  = ?,
+            modelo = ?,
+            anyo   = ?,
+            foto   = COALESCE(NULLIF(?, ""), foto)
+         WHERE id = ?'
     );
     $stmt->execute([
         ($input['alias'] ?? '') === '' ? null : $input['alias'],
         $input['marca']  ?? '',
         $input['modelo'] ?? '',
         isset($input['anyo']) ? (int)$input['anyo'] : null,
+        $input['foto']   ?? '',
         $id,
     ]);
 

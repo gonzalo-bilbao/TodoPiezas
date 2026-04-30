@@ -20,29 +20,11 @@ class AboutScreen extends StatelessWidget {
             Center(
               child: Column(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: AppTheme.primaryGradient,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.primary.withOpacity(0.4),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(Icons.build_circle, size: 64, color: Colors.white),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'TodoPiezas',
-                    style: GoogleFonts.exo2(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primary,
-                    ),
+                  Image.asset(
+                    isDark
+                        ? 'assets/images/Logo_oscuro.png'
+                        : 'assets/images/Logo_claro.png',
+                    width: 220,
                   ),
                   const SizedBox(height: 6),
                   Text(

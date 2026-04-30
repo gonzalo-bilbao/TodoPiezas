@@ -14,7 +14,7 @@ $userId = (int)$auth['user_id'];
 try {
     $db = getDB();
     $stmt = $db->prepare(
-        'SELECT id, alias, marca, modelo, anyo
+        'SELECT id, alias, marca, modelo, anyo, foto
          FROM vehiculos_usuario
          WHERE usuario_id = ?
          ORDER BY id ASC'
@@ -28,6 +28,7 @@ try {
         'marca'  => $r['marca'],
         'modelo' => $r['modelo'],
         'anyo'   => $r['anyo'] !== null ? (int)$r['anyo'] : null,
+        'foto'   => $r['foto'],
     ], $rows);
 
     jsonResponse($out);

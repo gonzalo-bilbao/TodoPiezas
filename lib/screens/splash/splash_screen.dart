@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 700),
     );
 
     _fade = Tween<double>(begin: 0, end: 1).animate(
@@ -34,8 +34,8 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    // Navega a Home tras 2.5 segundos
-    Future.delayed(const Duration(milliseconds: 2500), () {
+    // Navega a Home tras 1 segundo (la precarga ya corre en background)
+    Future.delayed(const Duration(milliseconds: 1000), () {
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -43,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen>
             pageBuilder: (_, __, ___) => const HomeScreen(),
             transitionsBuilder: (_, anim, __, child) =>
                 FadeTransition(opacity: anim, child: child),
-            transitionDuration: const Duration(milliseconds: 400),
+            transitionDuration: const Duration(milliseconds: 250),
           ),
         );
       }
@@ -68,8 +68,9 @@ class _SplashScreenState extends State<SplashScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // El splash siempre tiene fondo oscuro → usa Logo_oscuro
                 Image.asset(
-                  'assets/images/TodoPiezas.png',
+                  'assets/images/Logo_oscuro.png',
                   width: 260,
                 ),
                 const SizedBox(height: 8),

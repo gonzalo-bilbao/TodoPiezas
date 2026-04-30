@@ -4,6 +4,7 @@ class Vehiculo {
   final String marca;
   final String modelo;
   final int? anyo;
+  final String? foto;
 
   Vehiculo({
     required this.id,
@@ -11,6 +12,7 @@ class Vehiculo {
     required this.marca,
     required this.modelo,
     this.anyo,
+    this.foto,
   });
 
   factory Vehiculo.fromJson(Map<String, dynamic> json) => Vehiculo(
@@ -19,6 +21,7 @@ class Vehiculo {
         marca: json['marca'] ?? '',
         modelo: json['modelo'] ?? '',
         anyo: json['anyo'] == null ? null : int.tryParse(json['anyo'].toString()),
+        foto: json['foto'],
       );
 
   String get displayName {

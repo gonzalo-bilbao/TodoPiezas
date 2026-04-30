@@ -1,9 +1,12 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../models/vehiculo.dart';
 import '../../providers/vehiculos_provider.dart';
+import '../../services/api_service.dart';
 
 class MisVehiculosScreen extends StatefulWidget {
   const MisVehiculosScreen({super.key});
@@ -81,7 +84,25 @@ class _MisVehiculosScreenState extends State<MisVehiculosScreen> {
                     final v = p.vehiculos[i];
                     return Card(
                       child: ListTile(
-                        leading: const Icon(Icons.directions_car, color: AppTheme.primary),
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: SizedBox(
+                            width: 56, height: 56,
+                            child: v.foto != null && v.foto!.isNotEmpty
+                                ? Image.network(
+                                    AppConstants.imageUrl(v.foto),
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Container(
+                                      color: AppTheme.primary.withOpacity(0.15),
+                                      child: const Icon(Icons.directions_car, color: AppTheme.primary),
+                                    ),
+                                  )
+                                : Container(
+                                    color: AppTheme.primary.withOpacity(0.15),
+                                    child: const Icon(Icons.directions_car, color: AppTheme.primary),
+                                  ),
+                          ),
+                        ),
                         title: Text(
                           v.alias != null && v.alias!.isNotEmpty
                               ? v.alias!
@@ -127,6 +148,9 @@ class _VehiculoFormDialogState extends State<_VehiculoFormDialog> {
   late final TextEditingController _anyo;
   String? _marca;
   bool _saving = false;
+  Uint8List? _fotoBytes;
+  String? _fotoFilename;
+  String? _fotoExistente; // path actual si está editando
 
   @override
   void initState() {
@@ -136,6 +160,23 @@ class _VehiculoFormDialogState extends State<_VehiculoFormDialog> {
     _modelo = TextEditingController(text: v?.modelo ?? '');
     _anyo   = TextEditingController(text: v?.anyo?.toString() ?? '');
     _marca  = v?.marca;
+    _fotoExistente = v?.foto;
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+      maxWidth: 800,
+    );
+    if (picked != null) {
+      final bytes = await picked.readAsBytes();
+      setState(() {
+        _fotoBytes = bytes;
+        _fotoFilename = picked.name;
+      });
+    }
   }
 
   @override
@@ -150,12 +191,27 @@ class _VehiculoFormDialogState extends State<_VehiculoFormDialog> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
     final p = context.read<VehiculosProvider>();
+
+    String? fotoPath;
+    try {
+      if (_fotoBytes != null && _fotoFilename != null) {
+        fotoPath = await ApiService.uploadVehiculoImage(_fotoBytes!, _fotoFilename!);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al subir foto: $e')),
+        );
+      }
+    }
+
     final ok = widget.vehiculo == null
         ? await p.add(
             alias: _alias.text.trim().isEmpty ? null : _alias.text.trim(),
             marca: _marca!,
             modelo: _modelo.text.trim(),
             anyo: int.tryParse(_anyo.text),
+            foto: fotoPath,
           )
         : await p.update(
             widget.vehiculo!.id,
@@ -163,6 +219,7 @@ class _VehiculoFormDialogState extends State<_VehiculoFormDialog> {
             marca: _marca!,
             modelo: _modelo.text.trim(),
             anyo: int.tryParse(_anyo.text),
+            foto: fotoPath,
           );
     setState(() => _saving = false);
     if (ok && mounted) Navigator.pop(context);
@@ -178,6 +235,42 @@ class _VehiculoFormDialogState extends State<_VehiculoFormDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Selector de foto
+              Center(
+                child: GestureDetector(
+                  onTap: _pickImage,
+                  child: Container(
+                    width: 110, height: 110,
+                    decoration: BoxDecoration(
+                      color: AppTheme.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppTheme.primary.withOpacity(0.3)),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: _fotoBytes != null
+                        ? Image.memory(_fotoBytes!, fit: BoxFit.cover)
+                        : (_fotoExistente != null && _fotoExistente!.isNotEmpty
+                            ? Image.network(
+                                AppConstants.imageUrl(_fotoExistente),
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => const Icon(
+                                  Icons.add_a_photo, color: AppTheme.primary, size: 32,
+                                ),
+                              )
+                            : const Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.add_a_photo, color: AppTheme.primary, size: 28),
+                                    SizedBox(height: 4),
+                                    Text('Foto', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                                  ],
+                                ),
+                              )),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _alias,
                 decoration: const InputDecoration(

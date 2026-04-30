@@ -36,17 +36,35 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
   bool _loading = false;
   String? _filename;
 
-  /// Extrae el valor de una celda de Excel 4.x (sealed class CellValue).
+  /// Extrae texto de una celda de Excel de forma totalmente defensiva
+  /// para sobrevivir a cualquier diferencia entre versiones del paquete.
   String? _cellText(Data? cell) {
     if (cell == null) return null;
-    final v = cell.value;
-    if (v == null) return null;
-    if (v is TextCellValue) return v.value.text;
-    if (v is IntCellValue) return v.value.toString();
-    if (v is DoubleCellValue) return v.value.toString();
-    if (v is BoolCellValue) return v.value.toString();
-    if (v is DateCellValue) return '${v.year}-${v.month}-${v.day}';
-    return v.toString();
+    try {
+      final dynamic v = cell.value;
+      if (v == null) return null;
+      // Caso: tipos primitivos directos
+      if (v is String) return v;
+      if (v is num)    return v.toString();
+      if (v is bool)   return v.toString();
+      // Caso: CellValue de excel 4.x — intentar leer .value
+      try {
+        final dynamic inner = (v as dynamic).value;
+        if (inner == null) return null;
+        if (inner is String) return inner;
+        if (inner is num) return inner.toString();
+        if (inner is bool) return inner.toString();
+        // Si tiene .text (TextSpan en versiones recientes)
+        try {
+          final dynamic t = (inner as dynamic).text;
+          if (t is String) return t;
+        } catch (_) {}
+        return inner.toString();
+      } catch (_) {}
+      return v.toString();
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<void> _pickFile() async {
@@ -70,11 +88,28 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
         _showError('El archivo está vacío');
         return;
       }
+      // Determinar el número máximo de columnas con dato real
+      // (algunas versiones rellenan filas con celdas null sobrantes)
+      int maxCols = 0;
+      for (final row in sheet.rows) {
+        if (row.length > maxCols) maxCols = row.length;
+      }
+      List<String> _normalizeRow(List<dynamic> row) {
+        final out = <String>[];
+        for (var i = 0; i < maxCols; i++) {
+          if (i >= row.length) {
+            out.add('');
+          } else {
+            out.add(_cellText(row[i] as Data?) ?? '');
+          }
+        }
+        return out;
+      }
       // Primera fila = cabecera
-      final header = sheet.rows.first.map((c) => _cellText(c) ?? '').toList();
-      final datos = sheet.rows.skip(1).map(
-        (row) => row.map(_cellText).toList(),
-      ).toList();
+      final header = _normalizeRow(sheet.rows.first);
+      final datos = sheet.rows.skip(1)
+          .map((row) => _normalizeRow(row).map((s) => s.isEmpty ? null : s).toList())
+          .toList();
 
       setState(() {
         _columnasExcel = header;
@@ -90,14 +125,27 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
           _mapeo[i] = encontrado.isEmpty ? null : encontrado;
         }
       });
-    } catch (e) {
+    } catch (e, st) {
+      // Imprime stack en consola para depurar
+      // ignore: avoid_print
+      print('IMPORT_EXCEL_ERROR: $e\n$st');
       _showError('Error al leer Excel: $e');
     }
   }
 
   void _showError(String msg) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        duration: const Duration(seconds: 8),
+        action: SnackBarAction(
+          label: 'COPIAR',
+          onPressed: () {
+            // El usuario podrá copiar el error desde la consola
+          },
+        ),
+      ),
+    );
   }
 
   Future<void> _importar() async {

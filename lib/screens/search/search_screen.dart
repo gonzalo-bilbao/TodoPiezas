@@ -4,9 +4,8 @@ import 'package:provider/provider.dart';
 import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../providers/search_provider.dart';
-import '../../providers/user_provider.dart';
-import '../../providers/vehiculos_provider.dart';
 import '../../widgets/favoritos_list.dart';
+import '../../widgets/mis_vehiculos_list.dart';
 import '../../widgets/top_app_bar.dart';
 import 'results_screen.dart';
 
@@ -66,58 +65,14 @@ class _SearchScreenState extends State<SearchScreen> {
             const SizedBox(height: 8),
             const FavoritosList(),
             const SizedBox(height: 24),
-            // Sección "Mis vehículos" — un botón por cada vehículo del usuario
-            Builder(builder: (context) {
-              final user = context.watch<UserProvider>();
-              final vp = context.watch<VehiculosProvider>();
-              if (!user.isLoggedIn || vp.vehiculos.isEmpty) {
-                return const SizedBox.shrink();
-              }
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: _SectionHeader('Mis vehículos', Icons.directions_car),
-                    ),
-                    ...vp.vehiculos.map((v) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: () async {
-                            provider.clearFilters();
-                            provider.setFilter('marca', v.marca);
-                            provider.setFilter('modelo', v.modelo);
-                            _modeloController.text = v.modelo;
-                            if (v.anyo != null) {
-                              provider.setFilter('anyo', v.anyo);
-                              _anyoController.text = v.anyo.toString();
-                            }
-                            await provider.search();
-                            if (provider.error == null && context.mounted) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (_) => const ResultsScreen()),
-                              );
-                            }
-                          },
-                          icon: const Icon(Icons.search),
-                          label: Text('Ver piezas de ${v.displayName}'),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            backgroundColor: AppTheme.secondary,
-                            foregroundColor: Colors.white,
-                          ),
-                        ),
-                      ),
-                    )),
-                  ],
-                ),
-              );
-            }),
+            // Carrusel de coches del usuario
+            _SectionHeader('Mis coches', Icons.directions_car),
+            const SizedBox(height: 8),
+            MisVehiculosList(
+              modeloController: _modeloController,
+              anyoController: _anyoController,
+            ),
+            const SizedBox(height: 24),
             _SectionHeader('Vehículo', Icons.directions_car_outlined),
             const SizedBox(height: 12),
             _dropdown(

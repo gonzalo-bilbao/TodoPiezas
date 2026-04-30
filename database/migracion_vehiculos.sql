@@ -9,10 +9,15 @@ CREATE TABLE IF NOT EXISTS vehiculos_usuario (
   marca       VARCHAR(50)  NOT NULL,
   modelo      VARCHAR(50)  NOT NULL,
   anyo        INT          NULL,
+  foto        VARCHAR(255) NULL,
   created_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (usuario_id) REFERENCES usuarios_particulares(id) ON DELETE CASCADE,
   INDEX idx_usuario (usuario_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Si la tabla ya existía sin la columna foto, la añade
+ALTER TABLE vehiculos_usuario
+  ADD COLUMN IF NOT EXISTS foto VARCHAR(255) NULL AFTER anyo;
 
 -- Migrar los vehículos antiguos a la nueva tabla (si tenían alguno)
 INSERT INTO vehiculos_usuario (usuario_id, marca, modelo, anyo, alias)
