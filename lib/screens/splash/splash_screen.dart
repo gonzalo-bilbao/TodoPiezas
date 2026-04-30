@@ -68,8 +68,9 @@ class _SplashScreenState extends State<SplashScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // El splash siempre tiene fondo oscuro → usa Logo_oscuro
                 Image.asset(
-                  'assets/images/TodoPiezas.png',
+                  'assets/images/Logo_oscuro.png',
                   width: 260,
                 ),
                 const SizedBox(height: 8),

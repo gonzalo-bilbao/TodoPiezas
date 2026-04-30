@@ -25,7 +25,7 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/images/logo.png', width: 90, height: 90),
+                Image.asset('assets/images/Logo_simple.png', width: 90, height: 90),
                 const SizedBox(height: 16),
                 Text(
                   'TodoPiezas',
