@@ -16,6 +16,8 @@ $alias  = trim($input['alias']  ?? '');
 $marca  = trim($input['marca']  ?? '');
 $modelo = trim($input['modelo'] ?? '');
 $anyo   = isset($input['anyo']) ? (int)$input['anyo'] : null;
+$foto   = $input['foto'] ?? null;
+if (is_string($foto) && trim($foto) === '') $foto = null;
 
 if ($marca === '' || $modelo === '') {
     jsonError('Marca y modelo son obligatorios');
@@ -24,10 +26,10 @@ if ($marca === '' || $modelo === '') {
 try {
     $db = getDB();
     $stmt = $db->prepare(
-        'INSERT INTO vehiculos_usuario (usuario_id, alias, marca, modelo, anyo)
-         VALUES (?, ?, ?, ?, ?)'
+        'INSERT INTO vehiculos_usuario (usuario_id, alias, marca, modelo, anyo, foto)
+         VALUES (?, ?, ?, ?, ?, ?)'
     );
-    $stmt->execute([$userId, $alias === '' ? null : $alias, $marca, $modelo, $anyo]);
+    $stmt->execute([$userId, $alias === '' ? null : $alias, $marca, $modelo, $anyo, $foto]);
 
     jsonResponse([
         'id'     => (int)$db->lastInsertId(),
@@ -35,6 +37,7 @@ try {
         'marca'  => $marca,
         'modelo' => $modelo,
         'anyo'   => $anyo,
+        'foto'   => $foto,
     ], 201);
 } catch (PDOException $e) {
     jsonError('Error del servidor', 500);

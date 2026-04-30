@@ -331,6 +331,7 @@ class ApiService {
     required String marca,
     required String modelo,
     int? anyo,
+    String? foto,
   }) async {
     final res = await http.post(
       Uri.parse('$_base/vehiculos/create.php'),
@@ -343,6 +344,7 @@ class ApiService {
         'marca': marca,
         'modelo': modelo,
         if (anyo != null) 'anyo': anyo,
+        if (foto != null) 'foto': foto,
       }),
     );
     final data = jsonDecode(res.body);
@@ -357,6 +359,7 @@ class ApiService {
     required String marca,
     required String modelo,
     int? anyo,
+    String? foto,
   }) async {
     final res = await http.put(
       Uri.parse('$_base/vehiculos/update.php?id=$id'),
@@ -369,12 +372,26 @@ class ApiService {
         'marca': marca,
         'modelo': modelo,
         if (anyo != null) 'anyo': anyo,
+        if (foto != null) 'foto': foto,
       }),
     );
     if (res.statusCode != 200) {
       final data = jsonDecode(res.body);
       throw Exception(data['message'] ?? 'Error al actualizar');
     }
+  }
+
+  static Future<String> uploadVehiculoImage(Uint8List bytes, String filename) async {
+    final uri = Uri.parse('$_base/vehiculos/upload_image.php');
+    final request = http.MultipartRequest('POST', uri);
+    request.files.add(
+      http.MultipartFile.fromBytes('image', bytes, filename: filename),
+    );
+    final streamed = await request.send();
+    final res = await http.Response.fromStream(streamed);
+    if (res.statusCode != 200) throw Exception('Error al subir imagen');
+    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    return data['foto'] as String;
   }
 
   static Future<void> deleteVehiculo(String token, int id) async {

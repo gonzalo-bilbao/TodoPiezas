@@ -38,11 +38,12 @@ class VehiculosProvider extends ChangeNotifier {
     required String marca,
     required String modelo,
     int? anyo,
+    String? foto,
   }) async {
     if (_token == null) return false;
     try {
       final v = await ApiService.createVehiculo(
-        _token!, alias: alias, marca: marca, modelo: modelo, anyo: anyo,
+        _token!, alias: alias, marca: marca, modelo: modelo, anyo: anyo, foto: foto,
       );
       vehiculos.add(v);
       notifyListeners();
@@ -59,11 +60,12 @@ class VehiculosProvider extends ChangeNotifier {
     required String marca,
     required String modelo,
     int? anyo,
+    String? foto,
   }) async {
     if (_token == null) return false;
     try {
       await ApiService.updateVehiculo(
-        _token!, id, alias: alias, marca: marca, modelo: modelo, anyo: anyo,
+        _token!, id, alias: alias, marca: marca, modelo: modelo, anyo: anyo, foto: foto,
       );
       await load();
       return true;
