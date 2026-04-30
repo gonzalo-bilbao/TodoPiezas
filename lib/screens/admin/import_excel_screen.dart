@@ -125,14 +125,27 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
           _mapeo[i] = encontrado.isEmpty ? null : encontrado;
         }
       });
-    } catch (e) {
+    } catch (e, st) {
+      // Imprime stack en consola para depurar
+      // ignore: avoid_print
+      print('IMPORT_EXCEL_ERROR: $e\n$st');
       _showError('Error al leer Excel: $e');
     }
   }
 
   void _showError(String msg) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        duration: const Duration(seconds: 8),
+        action: SnackBarAction(
+          label: 'COPIAR',
+          onPressed: () {
+            // El usuario podrá copiar el error desde la consola
+          },
+        ),
+      ),
+    );
   }
 
   Future<void> _importar() async {
