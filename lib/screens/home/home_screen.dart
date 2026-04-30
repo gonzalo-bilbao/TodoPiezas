@@ -4,6 +4,7 @@ import '../search/search_screen.dart';
 import '../auth/login_screen.dart';
 import '../map/nearby_screen.dart';
 import '../../core/theme.dart';
+import '../../widgets/map_warmup.dart';
 import '../../widgets/top_app_bar.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -14,7 +15,11 @@ class HomeScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: const TopAppBar(title: 'TodoPiezas'),
-      body: SafeArea(
+      body: Stack(
+        children: [
+          // Precarga invisible de tiles del mapa
+          const MapWarmup(),
+          SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
             child: Column(
@@ -82,6 +87,8 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ),
+        ],
+      ),
     );
   }
 }

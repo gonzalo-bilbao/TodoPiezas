@@ -6,55 +6,21 @@ import '../core/theme.dart';
 import '../models/pieza.dart';
 import '../providers/favoritos_provider.dart';
 import '../screens/product/product_screen.dart';
-import '../services/api_service.dart';
 
-class FavoritosList extends StatefulWidget {
+class FavoritosList extends StatelessWidget {
   const FavoritosList({super.key});
 
   @override
-  State<FavoritosList> createState() => _FavoritosListState();
-}
-
-class _FavoritosListState extends State<FavoritosList> {
-  List<Pieza> _piezas = [];
-  bool _loading = false;
-  Set<int> _lastIds = {};
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _refreshIfNeeded();
-  }
-
-  Future<void> _refreshIfNeeded() async {
-    final ids = context.read<FavoritosProvider>().ids;
-    if (ids.length == _lastIds.length && ids.containsAll(_lastIds)) return;
-    _lastIds = Set.from(ids);
-    if (ids.isEmpty) {
-      setState(() => _piezas = []);
-      return;
-    }
-    setState(() => _loading = true);
-    try {
-      final piezas = await ApiService.getPiezasByIds(ids.toList());
-      if (mounted) setState(() { _piezas = piezas; _loading = false; });
-    } catch (_) {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    context.watch<FavoritosProvider>(); // Escucha cambios
-    WidgetsBinding.instance.addPostFrameCallback((_) => _refreshIfNeeded());
+    final fav = context.watch<FavoritosProvider>();
 
-    if (_loading) {
+    if (fav.piezasLoading && fav.piezas.isEmpty) {
       return const Padding(
         padding: EdgeInsets.all(20),
         child: Center(child: CircularProgressIndicator()),
       );
     }
-    if (_piezas.isEmpty) {
+    if (fav.piezas.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
@@ -74,9 +40,9 @@ class _FavoritosListState extends State<FavoritosList> {
       height: 150,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: _piezas.length,
+        itemCount: fav.piezas.length,
         separatorBuilder: (_, __) => const SizedBox(width: 10),
-        itemBuilder: (context, i) => _FavCard(pieza: _piezas[i]),
+        itemBuilder: (context, i) => _FavCard(pieza: fav.piezas[i]),
       ),
     );
   }
