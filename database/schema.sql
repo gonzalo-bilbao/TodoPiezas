@@ -184,3 +184,19 @@ CREATE TABLE IF NOT EXISTS favoritos (
   FOREIGN KEY (usuario_id) REFERENCES usuarios_particulares(id) ON DELETE CASCADE,
   FOREIGN KEY (pieza_id)   REFERENCES piezas(id)                ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ============================================================
+-- Tabla: vehiculos_usuario  (los coches de cada usuario, varios por usuario)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS vehiculos_usuario (
+  id          INT          PRIMARY KEY AUTO_INCREMENT,
+  usuario_id  INT          NOT NULL,
+  alias       VARCHAR(50)  NULL,
+  marca       VARCHAR(50)  NOT NULL,
+  modelo      VARCHAR(50)  NOT NULL,
+  anyo        INT          NULL,
+  foto        VARCHAR(255) NULL,
+  created_at  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (usuario_id) REFERENCES usuarios_particulares(id) ON DELETE CASCADE,
+  INDEX idx_usuario (usuario_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
