@@ -471,9 +471,15 @@ class _PiezaFormSheetState extends State<_PiezaFormSheet> {
                   height: 120,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF252538)
+                        : Colors.grey[100],
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey[300]!),
+                    border: Border.all(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF3A3A52)
+                          : Colors.grey[300]!,
+                    ),
                   ),
                   child: _imageBytes != null
                       ? ClipRRect(
