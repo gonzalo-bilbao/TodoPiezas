@@ -205,13 +205,21 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
         piezas: piezas,
       );
       if (!mounted) return;
+      final errores = (data['errores'] as List?) ?? [];
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${data['insertadas']} piezas importadas')),
+        SnackBar(
+          content: Text(
+            '${data['insertadas']} piezas importadas'
+            '${errores.isNotEmpty ? ' · ${errores.length} con error' : ''}',
+          ),
+          backgroundColor: errores.isNotEmpty ? Colors.orange : Colors.green,
+        ),
       );
-      if ((data['errores'] as List?)?.isNotEmpty ?? false) {
-        _showError('Algunas filas dieron error');
+      if (errores.isNotEmpty) {
+        // ignore: avoid_print
+        print('IMPORT_ERRORES: ${errores.join("\n")}');
       }
-      Navigator.pop(context);
+      Navigator.pop(context, true); // true → admin_screen recarga la lista
     } catch (e) {
       _showError(e.toString());
     } finally {
