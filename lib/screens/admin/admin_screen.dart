@@ -160,6 +160,10 @@ class _AdminScreenState extends State<AdminScreen> {
                         StatsCard(
                           desguaceId: auth.desguaceId!,
                           onSinStockTap: () => setState(() => _filterEstado = 'sin_stock'),
+                          onPiezasTap: () => setState(() {
+                            _filterEstado = null;
+                            _filterCategoria = null;
+                          }),
                         ),
                         // Barra de filtros
                         Container(

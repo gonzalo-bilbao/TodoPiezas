@@ -6,7 +6,13 @@ import '../services/api_service.dart';
 class StatsCard extends StatefulWidget {
   final int desguaceId;
   final VoidCallback? onSinStockTap;
-  const StatsCard({super.key, required this.desguaceId, this.onSinStockTap});
+  final VoidCallback? onPiezasTap;
+  const StatsCard({
+    super.key,
+    required this.desguaceId,
+    this.onSinStockTap,
+    this.onPiezasTap,
+  });
 
   @override
   State<StatsCard> createState() => _StatsCardState();
@@ -52,6 +58,7 @@ class _StatsCardState extends State<StatsCard> {
                 label: 'Piezas',
                 value: '${_stats!['total_piezas']}',
                 color: AppTheme.primary,
+                onTap: widget.onPiezasTap,
               )),
               const SizedBox(width: 8),
               Expanded(child: _StatBox(
