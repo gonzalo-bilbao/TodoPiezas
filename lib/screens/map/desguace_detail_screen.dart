@@ -159,12 +159,15 @@ class _DesguaceDetailScreenState extends State<DesguaceDetailScreen> {
                   ),
                   const SizedBox(height: 28),
                   // Tabla de piezas
-                  const Text(
+                  Text(
                     'Inventario disponible',
                     style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: AppTheme.secondary),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : AppTheme.secondary,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   _loadingPiezas
@@ -205,6 +208,12 @@ class _PiezasTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final rowEven = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final rowOdd  = isDark ? const Color(0xFF252538) : Colors.grey[50];
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final placeholderBg = isDark ? const Color(0xFF333344) : Colors.grey[200];
+
     return Column(
       children: [
         // Cabecera
@@ -234,7 +243,7 @@ class _PiezasTable extends StatelessWidget {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             decoration: BoxDecoration(
-              color: i.isEven ? Colors.white : Colors.grey[50],
+              color: i.isEven ? rowEven : rowOdd,
               borderRadius: BorderRadius.circular(6),
             ),
             child: Row(
@@ -250,11 +259,11 @@ class _PiezasTable extends StatelessWidget {
                             AppConstants.imageUrl(imagen),
                             fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) =>
-                                Container(color: Colors.grey[200],
+                                Container(color: placeholderBg,
                                     child: const Icon(Icons.car_repair, size: 18, color: Colors.grey)),
                           )
                         : Container(
-                            color: Colors.grey[200],
+                            color: placeholderBg,
                             child: const Icon(Icons.car_repair, size: 18, color: Colors.grey)),
                   ),
                 ),
@@ -262,7 +271,7 @@ class _PiezasTable extends StatelessWidget {
                 Expanded(
                   flex: 3,
                   child: Text(p['nombre'] ?? '',
-                      style: const TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 12, color: textColor),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis),
                 ),
@@ -290,7 +299,7 @@ class _PiezasTable extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Text('${p['stock'] ?? '-'}',
-                      style: const TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 12, color: textColor),
                       textAlign: TextAlign.right),
                 ),
               ],

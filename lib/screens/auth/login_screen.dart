@@ -79,7 +79,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: GoogleFonts.exo2(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.secondary)),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : AppTheme.secondary)),
                   const SizedBox(height: 20),
                   TextField(
                     controller: _emailController,

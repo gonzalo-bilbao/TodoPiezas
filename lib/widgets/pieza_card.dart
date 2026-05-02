@@ -11,6 +11,12 @@ class PiezaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final titleColor = isDark ? Colors.white : Colors.black87;
+    final subtitleColor = isDark ? Colors.grey[400] : Colors.grey[700];
+    final desguaceColor = isDark ? AppTheme.primaryEnd : AppTheme.secondary;
+    final imgBg = isDark ? const Color(0xFF252538) : Colors.grey[100];
+
     return Card(
       child: InkWell(
         onTap: onTap,
@@ -26,7 +32,7 @@ class PiezaCard extends StatelessWidget {
                 Container(
                   width: 80,
                   height: 80,
-                  color: Colors.grey[100],
+                  color: imgBg,
                   child: _buildImage(),
                 ),
                 const SizedBox(width: 12),
@@ -39,30 +45,36 @@ class PiezaCard extends StatelessWidget {
                       children: [
                         Text(
                           pieza.nombre,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: titleColor,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 2),
                         Text(
                           '${pieza.marca} ${pieza.modelo} · ${pieza.categoria}',
-                          style: const TextStyle(color: Colors.grey, fontSize: 12),
+                          style: TextStyle(color: subtitleColor, fontSize: 12),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
                         Text(
                           pieza.desguaceNombre,
-                          style: const TextStyle(
-                              fontSize: 12, color: AppTheme.secondary),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: desguaceColor,
+                            fontWeight: FontWeight.w600,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         if (pieza.distancia != null)
                           Text(
                             '${pieza.distancia!.toStringAsFixed(1)} km',
-                            style: const TextStyle(fontSize: 11, color: Colors.grey),
+                            style: TextStyle(fontSize: 11, color: subtitleColor),
                           ),
                       ],
                     ),

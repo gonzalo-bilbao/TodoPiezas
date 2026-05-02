@@ -177,7 +177,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Container(
                   height: 180,
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF252538)
+                        : Colors.grey[200],
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Center(
@@ -248,10 +250,12 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.bold,
-          color: AppTheme.secondary,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white
+              : AppTheme.secondary,
         ),
       );
 }
