@@ -22,7 +22,8 @@ dependencies:
   file_picker: ^8.1.2
   share_plus: ^10.0.2
   shared_preferences: ^2.3.2
-  excel: ^4.0.6
+  spreadsheet_decoder: ^3.0.0
+  csv: ^6.0.0
 
 dev_dependencies:
   flutter_test:

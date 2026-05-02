@@ -1,7 +1,9 @@
-import 'package:excel/excel.dart';
+import 'dart:convert';
+import 'package:csv/csv.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:spreadsheet_decoder/spreadsheet_decoder.dart';
 import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../providers/auth_provider.dart';
@@ -36,80 +38,101 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
   bool _loading = false;
   String? _filename;
 
-  /// Extrae texto de una celda de Excel de forma totalmente defensiva
-  /// para sobrevivir a cualquier diferencia entre versiones del paquete.
-  String? _cellText(Data? cell) {
-    if (cell == null) return null;
+  /// Decodifica los bytes del CSV intentando UTF-8 primero y cayendo a
+  /// latin-1 si falla. También quita el BOM si está presente.
+  String _decodeCsv(List<int> bytes) {
     try {
-      final dynamic v = cell.value;
-      if (v == null) return null;
-      // Caso: tipos primitivos directos
-      if (v is String) return v;
-      if (v is num)    return v.toString();
-      if (v is bool)   return v.toString();
-      // Caso: CellValue de excel 4.x — intentar leer .value
-      try {
-        final dynamic inner = (v as dynamic).value;
-        if (inner == null) return null;
-        if (inner is String) return inner;
-        if (inner is num) return inner.toString();
-        if (inner is bool) return inner.toString();
-        // Si tiene .text (TextSpan en versiones recientes)
-        try {
-          final dynamic t = (inner as dynamic).text;
-          if (t is String) return t;
-        } catch (_) {}
-        return inner.toString();
-      } catch (_) {}
-      return v.toString();
+      var text = utf8.decode(bytes);
+      if (text.isNotEmpty && text.codeUnitAt(0) == 0xFEFF) {
+        text = text.substring(1);
+      }
+      return text.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
     } catch (_) {
-      return null;
+      return latin1.decode(bytes)
+          .replaceAll('\r\n', '\n')
+          .replaceAll('\r', '\n');
     }
+  }
+
+  /// Extrae texto de una celda usando spreadsheet_decoder.
+  String? _cellText(dynamic cell) {
+    if (cell == null) return null;
+    if (cell is String) return cell;
+    if (cell is num) return cell.toString();
+    if (cell is bool) return cell.toString();
+    return cell.toString();
   }
 
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['xlsx', 'xls'],
+      allowedExtensions: ['xlsx', 'xls', 'csv'],
       withData: true,
     );
     if (result == null || result.files.single.bytes == null) return;
 
     final bytes = result.files.single.bytes!;
-    _filename = result.files.single.name;
+    final name = result.files.single.name;
+    _filename = name;
+    final isCsv = name.toLowerCase().endsWith('.csv');
+
     try {
-      final excel = Excel.decodeBytes(bytes);
-      if (excel.tables.isEmpty) {
-        _showError('El Excel no tiene hojas');
-        return;
-      }
-      final sheet = excel.tables[excel.tables.keys.first];
-      if (sheet == null || sheet.rows.isEmpty) {
-        _showError('El archivo está vacío');
-        return;
-      }
-      // Determinar el número máximo de columnas con dato real
-      // (algunas versiones rellenan filas con celdas null sobrantes)
-      int maxCols = 0;
-      for (final row in sheet.rows) {
-        if (row.length > maxCols) maxCols = row.length;
-      }
-      List<String> _normalizeRow(List<dynamic> row) {
-        final out = <String>[];
-        for (var i = 0; i < maxCols; i++) {
-          if (i >= row.length) {
-            out.add('');
-          } else {
-            out.add(_cellText(row[i] as Data?) ?? '');
-          }
+      List<String> header;
+      List<List<String?>> datos;
+
+      if (isCsv) {
+        // ── PARSE CSV ─────────────────────────────────────────────────────
+        // Detectar el separador automáticamente (coma o punto y coma).
+        // Excel en español exporta CSV con ";" por defecto.
+        final text = _decodeCsv(bytes);
+        final firstLine = text.split('\n').first;
+        final sep = firstLine.split(';').length > firstLine.split(',').length
+            ? ';' : ',';
+        final rows = const CsvToListConverter(eol: '\n', shouldParseNumbers: false)
+            .convert(text, fieldDelimiter: sep);
+        if (rows.isEmpty) {
+          _showError('El CSV está vacío');
+          return;
         }
-        return out;
+        header = rows.first.map((e) => e?.toString() ?? '').toList();
+        datos = rows.skip(1).map((row) => row.map((c) {
+          final s = c?.toString();
+          return (s == null || s.isEmpty) ? null : s;
+        }).toList()).toList();
+      } else {
+        // ── PARSE XLSX ────────────────────────────────────────────────────
+        // Usamos spreadsheet_decoder en lugar del paquete excel porque es
+        // más tolerante con archivos generados por openpyxl.
+        final decoder = SpreadsheetDecoder.decodeBytes(bytes);
+        if (decoder.tables.isEmpty) {
+          _showError('El Excel no tiene hojas');
+          return;
+        }
+        final sheet = decoder.tables[decoder.tables.keys.first];
+        if (sheet == null || sheet.rows.isEmpty) {
+          _showError('El archivo está vacío');
+          return;
+        }
+        int maxCols = 0;
+        for (final row in sheet.rows) {
+          if (row.length > maxCols) maxCols = row.length;
+        }
+        List<String> normalize(List<dynamic> row) {
+          final out = <String>[];
+          for (var i = 0; i < maxCols; i++) {
+            if (i >= row.length) {
+              out.add('');
+            } else {
+              out.add(_cellText(row[i]) ?? '');
+            }
+          }
+          return out;
+        }
+        header = normalize(sheet.rows.first);
+        datos = sheet.rows.skip(1)
+            .map((row) => normalize(row).map((s) => s.isEmpty ? null : s).toList())
+            .toList();
       }
-      // Primera fila = cabecera
-      final header = _normalizeRow(sheet.rows.first);
-      final datos = sheet.rows.skip(1)
-          .map((row) => _normalizeRow(row).map((s) => s.isEmpty ? null : s).toList())
-          .toList();
 
       setState(() {
         _columnasExcel = header;
@@ -199,7 +222,7 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Importar inventario (Excel)')),
+      appBar: AppBar(title: const Text('Importar inventario')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -211,8 +234,9 @@ class _ImportExcelScreenState extends State<ImportExcelScreen> {
               Icon(Icons.table_view, size: 80, color: AppTheme.primary.withOpacity(0.5)),
               const SizedBox(height: 16),
               const Text(
-                'Selecciona un archivo Excel (.xlsx) con tu inventario. '
-                'La primera fila debe ser la cabecera con los nombres de columna.',
+                'Selecciona un archivo .csv o .xlsx con tu inventario. '
+                'La primera fila debe ser la cabecera con los nombres de columna.\n\n'
+                'Si tu Excel da problemas, ábrelo y guárdalo como CSV.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.grey),
               ),
