@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>TodoPiezas — Modelo Entidad-Relación</title>
+<style>
+  :root {
+    --primary: #E85D04;
+    --primary-light: #F48C06;
+    --secondary: #1A1A2E;
+    --bg: #F5F6FA;
+    --card-bg: #FFFFFF;
+    --pk: #E85D04;
+    --fk: #2E86DE;
+    --text: #1A1A2E;
+    --muted: #6C757D;
+    --border: #E2E5EA;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    color: var(--text);
+    padding: 32px 16px 64px;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  h1 {
+    margin: 0 0 8px;
+    font-size: 32px;
+    color: var(--secondary);
+    letter-spacing: 0.5px;
+  }
+  h1 span { color: var(--primary); }
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0;
+  }
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin: 16px 0 32px;
+    flex-wrap: wrap;
+    font-size: 13px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+
+  /* ── Diagrama ──────────────────────────────────────────── */
+  .diagram {
+    position: relative;
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px 48px;
+    z-index: 1;
+  }
+
+  .table {
+    background: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(26,26,46,0.10);
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+    transition: transform .15s;
+  }
+  .table:hover { transform: translateY(-2px); }
+  .table-header {
+    background: linear-gradient(135deg, var(--secondary), #2E2E50);
+    color: white;
+    padding: 12px 16px;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .table-header.primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  }
+  .table-header .icon {
+    width: 22px; height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.18);
+    border-radius: 5px;
+    font-size: 12px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  td {
+    padding: 7px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  tr:last-child td { border-bottom: 0; }
+  td.col-name {
+    font-weight: 600;
+    width: 45%;
+  }
+  td.col-type {
+    color: var(--muted);
+    font-family: 'Consolas','Monaco',monospace;
+    font-size: 12px;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin-right: 5px;
+    letter-spacing: 0.5px;
+    color: white;
+    vertical-align: 1px;
+  }
+  .badge.pk { background: var(--pk); }
+  .badge.fk { background: var(--fk); }
+  .badge.uq { background: #6c757d; }
+  .badge.nn { background: #28a745; }
+
+  /* Notas explicativas debajo del diagrama */
+  .notes {
+    max-width: 1280px;
+    margin: 48px auto 0;
+    background: white;
+    padding: 24px 32px;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(26,26,46,0.06);
+  }
+  .notes h2 {
+    margin: 0 0 16px;
+    color: var(--secondary);
+    font-size: 18px;
+    border-left: 4px solid var(--primary);
+    padding-left: 10px;
+  }
+  .relations {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .relation {
+    background: var(--bg);
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    border-left: 3px solid var(--primary);
+  }
+  .relation b { color: var(--primary); }
+  .relation .arrow { color: var(--muted); margin: 0 6px; }
+  .relation .desc { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 32px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>TodoPiezas <span>·</span> Modelo Entidad-Relación</h1>
+  <p class="subtitle">Esquema de base de datos · MySQL · 7 tablas relacionadas</p>
+  <div class="legend">
+    <div class="legend-item"><span class="badge pk">PK</span> Clave primaria</div>
+    <div class="legend-item"><span class="badge fk">FK</span> Clave foránea</div>
+    <div class="legend-item"><span class="badge uq">UQ</span> Único</div>
+    <div class="legend-item"><span class="badge nn">NN</span> Not null</div>
+  </div>
+</header>
+
+<div class="diagram">
+
+  <!-- ── desguaces ───────────────────────────────────────── -->
+  <div class="table">
+    <div class="table-header"><span class="icon">🏢</span> desguaces</div>
+    <table>
+      <tr><td class="col-name"><span class="badge pk">PK</span>id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name">nombre</td><td class="col-type">VARCHAR(100)</td></tr>
+      <tr><td class="col-name">direccion</td><td class="col-type">VARCHAR(200)</td></tr>
+      <tr><td class="col-name">telefono</td><td class="col-type">VARCHAR(20)</td></tr>
+      <tr><td class="col-name">whatsapp</td><td class="col-type">VARCHAR(20)</td></tr>
+      <tr><td class="col-name"><span class="badge uq">UQ</span>email</td><td class="col-type">VARCHAR(100)</td></tr>
+      <tr><td class="col-name">password</td><td class="col-type">VARCHAR(255)</td></tr>
+      <tr><td class="col-name">lat</td><td class="col-type">DECIMAL(10,8)</td></tr>
+      <tr><td class="col-name">lng</td><td class="col-type">DECIMAL(11,8)</td></tr>
+      <tr><td class="col-name">horario</td><td class="col-type">VARCHAR(100)</td></tr>
+      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
+    </table>
+  </div>
+
+  <!-- ── piezas (centro) ─────────────────────────────────── -->
+  <div class="table">
+    <div class="table-header primary"><span class="icon">🔧</span> piezas</div>
+    <table>
+      <tr><td class="col-name"><span class="badge pk">PK</span>id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name">nombre</td><td class="col-type">VARCHAR(100)</td></tr>
+      <tr><td class="col-name">descripcion</td><td class="col-type">TEXT</td></tr>
+      <tr><td class="col-name">precio</td><td class="col-type">DECIMAL(10,2)</td></tr>
+      <tr><td class="col-name">estado</td><td class="col-type">ENUM</td></tr>
+      <tr><td class="col-name">imagen</td><td class="col-type">VARCHAR(255)</td></tr>
+      <tr><td class="col-name">color</td><td class="col-type">VARCHAR(50)</td></tr>
+      <tr><td class="col-name">stock</td><td class="col-type">INT</td></tr>
+      <tr><td class="col-name">categoria</td><td class="col-type">VARCHAR(50)</td></tr>
+      <tr><td class="col-name">marca</td><td class="col-type">VARCHAR(50)</td></tr>
+      <tr><td class="col-name">modelo</td><td class="col-type">VARCHAR(50)</td></tr>
+      <tr><td class="col-name">anyo</td><td class="col-type">SMALLINT</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span>desguace_id</td><td class="col-type">INT → desguaces</td></tr>
+      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
+    </table>
+  </div>
+
+  <!-- ── usuarios_particulares ───────────────────────────── -->
+  <div class="table">
+    <div class="table-header"><span class="icon">👤</span> usuarios_particulares</div>
+    <table>
+      <tr><td class="col-name"><span class="badge pk">PK</span>id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name"><span class="badge uq">UQ</span>email</td><td class="col-type">VARCHAR(100)</td></tr>
+      <tr><td class="col-name">password</td><td class="col-type">VARCHAR(255)</td></tr>
+      <tr><td class="col-name">nombre</td><td class="col-type">VARCHAR(100)</td></tr>
+      <tr><td class="col-name">foto</td><td class="col-type">VARCHAR(255)</td></tr>
+      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
+    </table>
+  </div>
+
+  <!-- ── pedidos ─────────────────────────────────────────── -->
+  <div class="table">
+    <div class="table-header"><span class="icon">📦</span> pedidos</div>
+    <table>
+      <tr><td class="col-name"><span class="badge pk">PK</span>id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span>usuario_id</td><td class="col-type">INT → usuarios</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span>pieza_id</td><td class="col-type">INT → piezas</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span>desguace_id</td><td class="col-type">INT → desguaces</td></tr>
+      <tr><td class="col-name">estado</td><td class="col-type">ENUM</td></tr>
+      <tr><td class="col-name">mensaje</td><td class="col-type">TEXT</td></tr>
+      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
+    </table>
+  </div>
+
+  <!-- ── usuarios (legacy / clientes registrados) ────────── -->
+  <div class="table">
+    <div class="table-header"><span class="icon">👥</span> usuarios</div>
+    <table>
+      <tr><td class="col-name"><span class="badge pk">PK</span>id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name">nombre</td><td class="col-type">VARCHAR(100)</td></tr>
+      <tr><td class="col-name"><span class="badge uq">UQ</span>email</td><td class="col-type">VARCHAR(100)</td></tr>
+      <tr><td class="col-name">password</td><td class="col-type">VARCHAR(255)</td></tr>
+      <tr><td class="col-name">telefono</td><td class="col-type">VARCHAR(20)</td></tr>
+      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
+    </table>
+  </div>
+
+  <!-- ── favoritos ───────────────────────────────────────── -->
+  <div class="table">
+    <div class="table-header"><span class="icon">❤️</span> favoritos</div>
+    <table>
+      <tr><td class="col-name"><span class="badge pk">PK</span>id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span>usuario_id</td><td class="col-type">INT → usuarios_particulares</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span>pieza_id</td><td class="col-type">INT → piezas</td></tr>
+      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
+      <tr><td class="col-name"><span class="badge uq">UQ</span>(usuario_id, pieza_id)</td><td class="col-type">UNIQUE</td></tr>
+    </table>
+  </div>
+
+  <!-- ── vehiculos_usuario ───────────────────────────────── -->
+  <div class="table" style="grid-column: 2 / 4;">
+    <div class="table-header"><span class="icon">🚗</span> vehiculos_usuario</div>
+    <table>
+      <tr><td class="col-name"><span class="badge pk">PK</span>id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span>usuario_id</td><td class="col-type">INT → usuarios_particulares</td></tr>
+      <tr><td class="col-name">alias</td><td class="col-type">VARCHAR(50)</td></tr>
+      <tr><td class="col-name">marca</td><td class="col-type">VARCHAR(50)</td></tr>
+      <tr><td class="col-name">modelo</td><td class="col-type">VARCHAR(50)</td></tr>
+      <tr><td class="col-name">anyo</td><td class="col-type">INT</td></tr>
+      <tr><td class="col-name">foto</td><td class="col-type">VARCHAR(255)</td></tr>
+      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
+    </table>
+  </div>
+
+</div>
+
+<!-- ── Relaciones explicadas ──────────────────────────────── -->
+<div class="notes">
+  <h2>Relaciones</h2>
+  <div class="relations">
+    <div class="relation">
+      <b>desguaces</b><span class="arrow">1 ─── N</span><b>piezas</b>
+      <span class="desc">Un desguace tiene muchas piezas en su inventario.</span>
+    </div>
+    <div class="relation">
+      <b>desguaces</b><span class="arrow">1 ─── N</span><b>pedidos</b>
+      <span class="desc">Un desguace gestiona muchos pedidos de clientes.</span>
+    </div>
+    <div class="relation">
+      <b>piezas</b><span class="arrow">1 ─── N</span><b>pedidos</b>
+      <span class="desc">Una pieza puede estar en muchos pedidos.</span>
+    </div>
+    <div class="relation">
+      <b>usuarios</b><span class="arrow">1 ─── N</span><b>pedidos</b>
+      <span class="desc">Un cliente registrado puede solicitar muchas piezas.</span>
+    </div>
+    <div class="relation">
+      <b>usuarios_particulares</b><span class="arrow">1 ─── N</span><b>vehiculos_usuario</b>
+      <span class="desc">Un usuario puede registrar varios coches en su perfil.</span>
+    </div>
+    <div class="relation">
+      <b>usuarios_particulares</b><span class="arrow">N ─── M</span><b>piezas</b>
+      <span class="desc">Mediante <i>favoritos</i>, los usuarios marcan piezas que les interesan.</span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  TodoPiezas — TFG · Desarrollo de Aplicaciones Multiplataforma
+</footer>
+
+</body>
+</html>
