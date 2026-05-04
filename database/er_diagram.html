@@ -4,196 +4,193 @@
 <meta charset="UTF-8" />
 <title>TodoPiezas — Modelo Entidad-Relación</title>
 <style>
-  :root {
-    --primary: #E85D04;
-    --primary-light: #F48C06;
-    --secondary: #1A1A2E;
-    --bg: #F5F6FA;
-    --card-bg: #FFFFFF;
-    --pk: #E85D04;
-    --fk: #2E86DE;
-    --text: #1A1A2E;
-    --muted: #6C757D;
-    --border: #E2E5EA;
-  }
-  * { box-sizing: border-box; }
   body {
     margin: 0;
-    background: var(--bg);
+    background: #F5F6FA;
     font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-    color: var(--text);
-    padding: 32px 16px 64px;
+    color: #1A1A2E;
+    padding: 32px 16px 48px;
   }
-  header {
-    text-align: center;
-    margin-bottom: 32px;
-  }
+  header { text-align: center; margin-bottom: 24px; }
   h1 {
-    margin: 0 0 8px;
-    font-size: 32px;
-    color: var(--secondary);
-    letter-spacing: 0.5px;
+    margin: 0 0 6px;
+    font-size: 28px;
+    color: #1A1A2E;
+    font-weight: 700;
   }
-  h1 span { color: var(--primary); }
-  .subtitle {
-    color: var(--muted);
-    font-size: 14px;
-    margin: 0;
-  }
+  .subtitle { color: #6C757D; font-size: 13px; margin: 0; }
+
   .legend {
     display: flex;
     justify-content: center;
     gap: 24px;
-    margin: 16px 0 32px;
+    margin: 14px 0 24px;
     flex-wrap: wrap;
-    font-size: 13px;
+    font-size: 12px;
+    color: #444;
   }
   .legend-item { display: flex; align-items: center; gap: 6px; }
-  .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
-
-  /* ── Diagrama ──────────────────────────────────────────── */
-  .diagram {
-    position: relative;
-    max-width: 1280px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 32px 48px;
-    z-index: 1;
-  }
-
-  .table {
-    background: var(--card-bg);
-    border-radius: 10px;
-    box-shadow: 0 4px 16px rgba(26,26,46,0.10);
-    overflow: hidden;
-    position: relative;
-    z-index: 2;
-    transition: transform .15s;
-  }
-  .table:hover { transform: translateY(-2px); }
-  .table-header {
-    background: linear-gradient(135deg, var(--secondary), #2E2E50);
-    color: white;
-    padding: 12px 16px;
-    font-weight: 700;
-    font-size: 15px;
-    letter-spacing: 0.3px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .table-header.primary {
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  }
-  .table-header .icon {
-    width: 22px; height: 22px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255,255,255,0.18);
-    border-radius: 5px;
-    font-size: 12px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-  td {
-    padding: 7px 14px;
-    border-bottom: 1px solid var(--border);
-  }
-  tr:last-child td { border-bottom: 0; }
-  td.col-name {
-    font-weight: 600;
-    width: 45%;
-  }
-  td.col-type {
-    color: var(--muted);
-    font-family: 'Consolas','Monaco',monospace;
-    font-size: 12px;
-  }
   .badge {
     display: inline-block;
     font-size: 9px;
     font-weight: 700;
     padding: 2px 5px;
     border-radius: 3px;
-    margin-right: 5px;
-    letter-spacing: 0.5px;
     color: white;
-    vertical-align: 1px;
+    letter-spacing: 0.5px;
   }
-  .badge.pk { background: var(--pk); }
-  .badge.fk { background: var(--fk); }
+  .badge.pk { background: #E85D04; }
+  .badge.fk { background: #2E86DE; }
   .badge.uq { background: #6c757d; }
-  .badge.nn { background: #28a745; }
 
-  /* Notas explicativas debajo del diagrama */
-  .notes {
-    max-width: 1280px;
-    margin: 48px auto 0;
+  /* ── Diagrama ─────────────────────────────────────────── */
+  .diagram-wrapper {
+    position: relative;
+    max-width: 1400px;
+    margin: 0 auto;
+    overflow-x: auto;
+  }
+  .diagram {
+    position: relative;
+    width: 1400px;
+    height: 980px;
+  }
+
+  svg.connections {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .table {
+    position: absolute;
     background: white;
-    padding: 24px 32px;
-    border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(26,26,46,0.06);
-  }
-  .notes h2 {
-    margin: 0 0 16px;
-    color: var(--secondary);
-    font-size: 18px;
-    border-left: 4px solid var(--primary);
-    padding-left: 10px;
-  }
-  .relations {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 14px;
-  }
-  .relation {
-    background: var(--bg);
-    padding: 12px 14px;
     border-radius: 8px;
-    font-size: 13px;
-    border-left: 3px solid var(--primary);
+    box-shadow: 0 3px 10px rgba(26,26,46,0.12);
+    overflow: hidden;
+    z-index: 2;
+    width: 280px;
   }
-  .relation b { color: var(--primary); }
-  .relation .arrow { color: var(--muted); margin: 0 6px; }
-  .relation .desc { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .table-header {
+    background: #1A1A2E;
+    color: white;
+    padding: 10px 14px;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+  }
+  .table-header.primary { background: #E85D04; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  td { padding: 6px 12px; border-bottom: 1px solid #EEE; }
+  tr:last-child td { border-bottom: 0; }
+  td.col-name { font-weight: 600; }
+  td.col-type {
+    color: #6C757D;
+    font-family: 'Consolas','Monaco',monospace;
+    font-size: 11.5px;
+    text-align: right;
+  }
+
+  /* Posiciones absolutas — un esquema centralizado en piezas */
+  .pos-desguaces      { top:  20px; left:  40px; }
+  .pos-piezas         { top:  20px; left: 560px; }
+  .pos-usuarios-part  { top:  20px; left: 1080px; }
+  .pos-vehiculos      { top: 460px; left: 1080px; }
+  .pos-favoritos      { top: 720px; left: 820px; }
+  .pos-pedidos        { top: 540px; left: 540px; }
+  .pos-usuarios       { top: 540px; left:  40px; }
 
   footer {
     text-align: center;
-    color: var(--muted);
+    color: #6C757D;
     font-size: 12px;
     margin-top: 32px;
+  }
+  .relations-text {
+    text-align: center;
+    color: #444;
+    font-size: 12px;
+    margin-top: 8px;
   }
 </style>
 </head>
 <body>
 <header>
-  <h1>TodoPiezas <span>·</span> Modelo Entidad-Relación</h1>
+  <h1>TodoPiezas — Modelo Entidad-Relación</h1>
   <p class="subtitle">Esquema de base de datos · MySQL · 7 tablas relacionadas</p>
   <div class="legend">
     <div class="legend-item"><span class="badge pk">PK</span> Clave primaria</div>
     <div class="legend-item"><span class="badge fk">FK</span> Clave foránea</div>
     <div class="legend-item"><span class="badge uq">UQ</span> Único</div>
-    <div class="legend-item"><span class="badge nn">NN</span> Not null</div>
+    <div class="legend-item"><span style="width:24px;height:2px;background:#E85D04;display:inline-block"></span> Relación 1 a N</div>
   </div>
 </header>
 
+<div class="diagram-wrapper">
 <div class="diagram">
 
-  <!-- ── desguaces ───────────────────────────────────────── -->
-  <div class="table">
-    <div class="table-header"><span class="icon">🏢</span> desguaces</div>
+  <!-- ── Líneas de relación ─────────────────────────────── -->
+  <svg class="connections" viewBox="0 0 1400 980" preserveAspectRatio="none">
+    <defs>
+      <marker id="arrow-end" viewBox="0 0 10 10" refX="9" refY="5"
+              markerWidth="8" markerHeight="8" orient="auto">
+        <path d="M0,0 L10,5 L0,10 z" fill="#E85D04"/>
+      </marker>
+      <style>
+        .line  { stroke: #E85D04; stroke-width: 2; fill: none; }
+        .lbl   { font: 600 12px Arial; fill: #1A1A2E; }
+        .lbl-bg{ fill: white; stroke: #E85D04; stroke-width: 1; rx: 3; ry: 3; }
+      </style>
+    </defs>
+
+    <!-- desguaces.id (320,75) → piezas.desguace_id (560,348) -->
+    <path class="line" d="M 320,75 C 440,75 440,348 560,348" marker-end="url(#arrow-end)"/>
+    <rect class="lbl-bg" x="425" y="195" width="36" height="20"/>
+    <text class="lbl" x="430" y="210">1 : N</text>
+
+    <!-- piezas.id (700,75 right side) → pedidos.pieza_id (840,640) reversed: pedidos→piezas -->
+    <path class="line" d="M 700,400 C 700,470 700,470 700,540" marker-end="url(#arrow-end)"/>
+    <rect class="lbl-bg" x="682" y="465" width="36" height="20"/>
+    <text class="lbl" x="687" y="480">1 : N</text>
+
+    <!-- desguaces.id → pedidos.desguace_id -->
+    <path class="line" d="M 180,440 C 180,500 280,540 540,640" marker-end="url(#arrow-end)"/>
+    <rect class="lbl-bg" x="240" y="555" width="36" height="20"/>
+    <text class="lbl" x="245" y="570">1 : N</text>
+
+    <!-- usuarios.id → pedidos.usuario_id -->
+    <path class="line" d="M 320,640 L 540,660" marker-end="url(#arrow-end)"/>
+    <rect class="lbl-bg" x="410" y="640" width="36" height="20"/>
+    <text class="lbl" x="415" y="655">1 : N</text>
+
+    <!-- usuarios_particulares.id → vehiculos_usuario.usuario_id -->
+    <path class="line" d="M 1220,250 L 1220,460" marker-end="url(#arrow-end)"/>
+    <rect class="lbl-bg" x="1202" y="345" width="36" height="20"/>
+    <text class="lbl" x="1207" y="360">1 : N</text>
+
+    <!-- usuarios_particulares.id → favoritos.usuario_id -->
+    <path class="line" d="M 1080,200 C 1020,400 1000,600 1100,720" marker-end="url(#arrow-end)"/>
+    <rect class="lbl-bg" x="990" y="465" width="36" height="20"/>
+    <text class="lbl" x="995" y="480">1 : N</text>
+
+    <!-- piezas.id → favoritos.pieza_id -->
+    <path class="line" d="M 700,420 C 760,560 820,640 900,720" marker-end="url(#arrow-end)"/>
+    <rect class="lbl-bg" x="800" y="595" width="36" height="20"/>
+    <text class="lbl" x="805" y="610">1 : N</text>
+  </svg>
+
+  <!-- ── Tablas ────────────────────────────────────────── -->
+  <div class="table pos-desguaces">
+    <div class="table-header">desguaces</div>
     <table>
-      <tr><td class="col-name"><span class="badge pk">PK</span>id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name"><span class="badge pk">PK</span> id</td><td class="col-type">INT AI</td></tr>
       <tr><td class="col-name">nombre</td><td class="col-type">VARCHAR(100)</td></tr>
       <tr><td class="col-name">direccion</td><td class="col-type">VARCHAR(200)</td></tr>
       <tr><td class="col-name">telefono</td><td class="col-type">VARCHAR(20)</td></tr>
       <tr><td class="col-name">whatsapp</td><td class="col-type">VARCHAR(20)</td></tr>
-      <tr><td class="col-name"><span class="badge uq">UQ</span>email</td><td class="col-type">VARCHAR(100)</td></tr>
+      <tr><td class="col-name"><span class="badge uq">UQ</span> email</td><td class="col-type">VARCHAR(100)</td></tr>
       <tr><td class="col-name">password</td><td class="col-type">VARCHAR(255)</td></tr>
       <tr><td class="col-name">lat</td><td class="col-type">DECIMAL(10,8)</td></tr>
       <tr><td class="col-name">lng</td><td class="col-type">DECIMAL(11,8)</td></tr>
@@ -202,11 +199,10 @@
     </table>
   </div>
 
-  <!-- ── piezas (centro) ─────────────────────────────────── -->
-  <div class="table">
-    <div class="table-header primary"><span class="icon">🔧</span> piezas</div>
+  <div class="table pos-piezas" style="width:340px;">
+    <div class="table-header primary">piezas</div>
     <table>
-      <tr><td class="col-name"><span class="badge pk">PK</span>id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name"><span class="badge pk">PK</span> id</td><td class="col-type">INT AI</td></tr>
       <tr><td class="col-name">nombre</td><td class="col-type">VARCHAR(100)</td></tr>
       <tr><td class="col-name">descripcion</td><td class="col-type">TEXT</td></tr>
       <tr><td class="col-name">precio</td><td class="col-type">DECIMAL(10,2)</td></tr>
@@ -218,17 +214,16 @@
       <tr><td class="col-name">marca</td><td class="col-type">VARCHAR(50)</td></tr>
       <tr><td class="col-name">modelo</td><td class="col-type">VARCHAR(50)</td></tr>
       <tr><td class="col-name">anyo</td><td class="col-type">SMALLINT</td></tr>
-      <tr><td class="col-name"><span class="badge fk">FK</span>desguace_id</td><td class="col-type">INT → desguaces</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span> desguace_id</td><td class="col-type">INT</td></tr>
       <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
     </table>
   </div>
 
-  <!-- ── usuarios_particulares ───────────────────────────── -->
-  <div class="table">
-    <div class="table-header"><span class="icon">👤</span> usuarios_particulares</div>
+  <div class="table pos-usuarios-part">
+    <div class="table-header">usuarios_particulares</div>
     <table>
-      <tr><td class="col-name"><span class="badge pk">PK</span>id</td><td class="col-type">INT AI</td></tr>
-      <tr><td class="col-name"><span class="badge uq">UQ</span>email</td><td class="col-type">VARCHAR(100)</td></tr>
+      <tr><td class="col-name"><span class="badge pk">PK</span> id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name"><span class="badge uq">UQ</span> email</td><td class="col-type">VARCHAR(100)</td></tr>
       <tr><td class="col-name">password</td><td class="col-type">VARCHAR(255)</td></tr>
       <tr><td class="col-name">nombre</td><td class="col-type">VARCHAR(100)</td></tr>
       <tr><td class="col-name">foto</td><td class="col-type">VARCHAR(255)</td></tr>
@@ -236,51 +231,11 @@
     </table>
   </div>
 
-  <!-- ── pedidos ─────────────────────────────────────────── -->
-  <div class="table">
-    <div class="table-header"><span class="icon">📦</span> pedidos</div>
+  <div class="table pos-vehiculos">
+    <div class="table-header">vehiculos_usuario</div>
     <table>
-      <tr><td class="col-name"><span class="badge pk">PK</span>id</td><td class="col-type">INT AI</td></tr>
-      <tr><td class="col-name"><span class="badge fk">FK</span>usuario_id</td><td class="col-type">INT → usuarios</td></tr>
-      <tr><td class="col-name"><span class="badge fk">FK</span>pieza_id</td><td class="col-type">INT → piezas</td></tr>
-      <tr><td class="col-name"><span class="badge fk">FK</span>desguace_id</td><td class="col-type">INT → desguaces</td></tr>
-      <tr><td class="col-name">estado</td><td class="col-type">ENUM</td></tr>
-      <tr><td class="col-name">mensaje</td><td class="col-type">TEXT</td></tr>
-      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
-    </table>
-  </div>
-
-  <!-- ── usuarios (legacy / clientes registrados) ────────── -->
-  <div class="table">
-    <div class="table-header"><span class="icon">👥</span> usuarios</div>
-    <table>
-      <tr><td class="col-name"><span class="badge pk">PK</span>id</td><td class="col-type">INT AI</td></tr>
-      <tr><td class="col-name">nombre</td><td class="col-type">VARCHAR(100)</td></tr>
-      <tr><td class="col-name"><span class="badge uq">UQ</span>email</td><td class="col-type">VARCHAR(100)</td></tr>
-      <tr><td class="col-name">password</td><td class="col-type">VARCHAR(255)</td></tr>
-      <tr><td class="col-name">telefono</td><td class="col-type">VARCHAR(20)</td></tr>
-      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
-    </table>
-  </div>
-
-  <!-- ── favoritos ───────────────────────────────────────── -->
-  <div class="table">
-    <div class="table-header"><span class="icon">❤️</span> favoritos</div>
-    <table>
-      <tr><td class="col-name"><span class="badge pk">PK</span>id</td><td class="col-type">INT AI</td></tr>
-      <tr><td class="col-name"><span class="badge fk">FK</span>usuario_id</td><td class="col-type">INT → usuarios_particulares</td></tr>
-      <tr><td class="col-name"><span class="badge fk">FK</span>pieza_id</td><td class="col-type">INT → piezas</td></tr>
-      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
-      <tr><td class="col-name"><span class="badge uq">UQ</span>(usuario_id, pieza_id)</td><td class="col-type">UNIQUE</td></tr>
-    </table>
-  </div>
-
-  <!-- ── vehiculos_usuario ───────────────────────────────── -->
-  <div class="table" style="grid-column: 2 / 4;">
-    <div class="table-header"><span class="icon">🚗</span> vehiculos_usuario</div>
-    <table>
-      <tr><td class="col-name"><span class="badge pk">PK</span>id</td><td class="col-type">INT AI</td></tr>
-      <tr><td class="col-name"><span class="badge fk">FK</span>usuario_id</td><td class="col-type">INT → usuarios_particulares</td></tr>
+      <tr><td class="col-name"><span class="badge pk">PK</span> id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span> usuario_id</td><td class="col-type">INT</td></tr>
       <tr><td class="col-name">alias</td><td class="col-type">VARCHAR(50)</td></tr>
       <tr><td class="col-name">marca</td><td class="col-type">VARCHAR(50)</td></tr>
       <tr><td class="col-name">modelo</td><td class="col-type">VARCHAR(50)</td></tr>
@@ -290,42 +245,49 @@
     </table>
   </div>
 
-</div>
-
-<!-- ── Relaciones explicadas ──────────────────────────────── -->
-<div class="notes">
-  <h2>Relaciones</h2>
-  <div class="relations">
-    <div class="relation">
-      <b>desguaces</b><span class="arrow">1 ─── N</span><b>piezas</b>
-      <span class="desc">Un desguace tiene muchas piezas en su inventario.</span>
-    </div>
-    <div class="relation">
-      <b>desguaces</b><span class="arrow">1 ─── N</span><b>pedidos</b>
-      <span class="desc">Un desguace gestiona muchos pedidos de clientes.</span>
-    </div>
-    <div class="relation">
-      <b>piezas</b><span class="arrow">1 ─── N</span><b>pedidos</b>
-      <span class="desc">Una pieza puede estar en muchos pedidos.</span>
-    </div>
-    <div class="relation">
-      <b>usuarios</b><span class="arrow">1 ─── N</span><b>pedidos</b>
-      <span class="desc">Un cliente registrado puede solicitar muchas piezas.</span>
-    </div>
-    <div class="relation">
-      <b>usuarios_particulares</b><span class="arrow">1 ─── N</span><b>vehiculos_usuario</b>
-      <span class="desc">Un usuario puede registrar varios coches en su perfil.</span>
-    </div>
-    <div class="relation">
-      <b>usuarios_particulares</b><span class="arrow">N ─── M</span><b>piezas</b>
-      <span class="desc">Mediante <i>favoritos</i>, los usuarios marcan piezas que les interesan.</span>
-    </div>
+  <div class="table pos-favoritos">
+    <div class="table-header">favoritos</div>
+    <table>
+      <tr><td class="col-name"><span class="badge pk">PK</span> id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span> usuario_id</td><td class="col-type">INT</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span> pieza_id</td><td class="col-type">INT</td></tr>
+      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
+    </table>
   </div>
+
+  <div class="table pos-pedidos" style="width:320px;">
+    <div class="table-header">pedidos</div>
+    <table>
+      <tr><td class="col-name"><span class="badge pk">PK</span> id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span> usuario_id</td><td class="col-type">INT</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span> pieza_id</td><td class="col-type">INT</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span> desguace_id</td><td class="col-type">INT</td></tr>
+      <tr><td class="col-name">estado</td><td class="col-type">ENUM</td></tr>
+      <tr><td class="col-name">mensaje</td><td class="col-type">TEXT</td></tr>
+      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
+    </table>
+  </div>
+
+  <div class="table pos-usuarios">
+    <div class="table-header">usuarios</div>
+    <table>
+      <tr><td class="col-name"><span class="badge pk">PK</span> id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name">nombre</td><td class="col-type">VARCHAR(100)</td></tr>
+      <tr><td class="col-name"><span class="badge uq">UQ</span> email</td><td class="col-type">VARCHAR(100)</td></tr>
+      <tr><td class="col-name">password</td><td class="col-type">VARCHAR(255)</td></tr>
+      <tr><td class="col-name">telefono</td><td class="col-type">VARCHAR(20)</td></tr>
+      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
+    </table>
+  </div>
+
+</div>
 </div>
 
-<footer>
-  TodoPiezas — TFG · Desarrollo de Aplicaciones Multiplataforma
-</footer>
+<p class="relations-text">
+  Las flechas indican relación 1 a N partiendo de la tabla con la PK hacia la tabla con la FK.
+</p>
+
+<footer>TodoPiezas — TFG · Desarrollo de Aplicaciones Multiplataforma</footer>
 
 </body>
 </html>
