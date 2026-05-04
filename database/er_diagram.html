@@ -12,48 +12,34 @@
     padding: 32px 16px 48px;
   }
   header { text-align: center; margin-bottom: 24px; }
-  h1 {
-    margin: 0 0 6px;
-    font-size: 28px;
-    color: #1A1A2E;
-    font-weight: 700;
-  }
+  h1 { margin: 0 0 6px; font-size: 28px; color: #1A1A2E; font-weight: 700; }
   .subtitle { color: #6C757D; font-size: 13px; margin: 0; }
 
   .legend {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    margin: 14px 0 24px;
-    flex-wrap: wrap;
-    font-size: 12px;
-    color: #444;
+    display: flex; justify-content: center; gap: 24px;
+    margin: 14px 0 24px; flex-wrap: wrap;
+    font-size: 12px; color: #444;
   }
   .legend-item { display: flex; align-items: center; gap: 6px; }
   .badge {
-    display: inline-block;
-    font-size: 9px;
-    font-weight: 700;
-    padding: 2px 5px;
-    border-radius: 3px;
-    color: white;
-    letter-spacing: 0.5px;
+    display: inline-block; font-size: 9px; font-weight: 700;
+    padding: 2px 5px; border-radius: 3px;
+    color: white; letter-spacing: 0.5px;
   }
   .badge.pk { background: #E85D04; }
   .badge.fk { background: #2E86DE; }
   .badge.uq { background: #6c757d; }
 
-  /* ── Diagrama ─────────────────────────────────────────── */
   .diagram-wrapper {
     position: relative;
-    max-width: 1400px;
+    max-width: 1440px;
     margin: 0 auto;
     overflow-x: auto;
   }
   .diagram {
     position: relative;
-    width: 1400px;
-    height: 980px;
+    width: 1440px;
+    height: 900px;
   }
 
   svg.connections {
@@ -93,26 +79,20 @@
     text-align: right;
   }
 
-  /* Posiciones absolutas — un esquema centralizado en piezas */
+  /* ── Posiciones de las tablas ─────────────────────────── */
   .pos-desguaces      { top:  20px; left:  40px; }
-  .pos-piezas         { top:  20px; left: 560px; }
-  .pos-usuarios-part  { top:  20px; left: 1080px; }
-  .pos-vehiculos      { top: 460px; left: 1080px; }
-  .pos-favoritos      { top: 720px; left: 820px; }
-  .pos-pedidos        { top: 540px; left: 540px; }
+  .pos-piezas         { top:  20px; left: 380px; }
+  .pos-favoritos      { top: 240px; left: 760px; }
+  .pos-usuarios-part  { top:  20px; left: 1100px; }
+  .pos-vehiculos      { top: 320px; left: 1100px; }
   .pos-usuarios       { top: 540px; left:  40px; }
+  .pos-pedidos        { top: 540px; left: 380px; }
 
   footer {
     text-align: center;
     color: #6C757D;
     font-size: 12px;
     margin-top: 32px;
-  }
-  .relations-text {
-    text-align: center;
-    color: #444;
-    font-size: 12px;
-    margin-top: 8px;
   }
 </style>
 </head>
@@ -131,54 +111,48 @@
 <div class="diagram-wrapper">
 <div class="diagram">
 
-  <!-- ── Líneas de relación ─────────────────────────────── -->
-  <svg class="connections" viewBox="0 0 1400 980" preserveAspectRatio="none">
+  <svg class="connections" viewBox="0 0 1440 900" preserveAspectRatio="none">
     <defs>
       <marker id="arrow-end" viewBox="0 0 10 10" refX="9" refY="5"
               markerWidth="8" markerHeight="8" orient="auto">
         <path d="M0,0 L10,5 L0,10 z" fill="#E85D04"/>
       </marker>
-      <style>
-        .line  { stroke: #E85D04; stroke-width: 2; fill: none; }
-        .lbl   { font: 600 12px Arial; fill: #1A1A2E; }
-        .lbl-bg{ fill: white; stroke: #E85D04; stroke-width: 1; rx: 3; ry: 3; }
-      </style>
     </defs>
 
-    <!-- desguaces.id (320,75) → piezas.desguace_id (560,348) -->
-    <path class="line" d="M 320,75 C 440,75 440,348 560,348" marker-end="url(#arrow-end)"/>
-    <rect class="lbl-bg" x="425" y="195" width="36" height="20"/>
-    <text class="lbl" x="430" y="210">1 : N</text>
-
-    <!-- piezas.id (700,75 right side) → pedidos.pieza_id (840,640) reversed: pedidos→piezas -->
-    <path class="line" d="M 700,400 C 700,470 700,470 700,540" marker-end="url(#arrow-end)"/>
-    <rect class="lbl-bg" x="682" y="465" width="36" height="20"/>
-    <text class="lbl" x="687" y="480">1 : N</text>
-
-    <!-- desguaces.id → pedidos.desguace_id -->
-    <path class="line" d="M 180,440 C 180,500 280,540 540,640" marker-end="url(#arrow-end)"/>
-    <rect class="lbl-bg" x="240" y="555" width="36" height="20"/>
-    <text class="lbl" x="245" y="570">1 : N</text>
-
-    <!-- usuarios.id → pedidos.usuario_id -->
-    <path class="line" d="M 320,640 L 540,660" marker-end="url(#arrow-end)"/>
-    <rect class="lbl-bg" x="410" y="640" width="36" height="20"/>
-    <text class="lbl" x="415" y="655">1 : N</text>
-
-    <!-- usuarios_particulares.id → vehiculos_usuario.usuario_id -->
-    <path class="line" d="M 1220,250 L 1220,460" marker-end="url(#arrow-end)"/>
-    <rect class="lbl-bg" x="1202" y="345" width="36" height="20"/>
-    <text class="lbl" x="1207" y="360">1 : N</text>
-
-    <!-- usuarios_particulares.id → favoritos.usuario_id -->
-    <path class="line" d="M 1080,200 C 1020,400 1000,600 1100,720" marker-end="url(#arrow-end)"/>
-    <rect class="lbl-bg" x="990" y="465" width="36" height="20"/>
-    <text class="lbl" x="995" y="480">1 : N</text>
+    <!-- desguaces.id → piezas.desguace_id -->
+    <path d="M 320,240 L 380,240" stroke="#E85D04" stroke-width="2" fill="none" marker-end="url(#arrow-end)"/>
+    <rect x="328" y="216" width="36" height="20" fill="white" stroke="#E85D04" rx="3"/>
+    <text x="333" y="231" font-family="Arial" font-size="12" font-weight="600" fill="#1A1A2E">1 : N</text>
 
     <!-- piezas.id → favoritos.pieza_id -->
-    <path class="line" d="M 700,420 C 760,560 820,640 900,720" marker-end="url(#arrow-end)"/>
-    <rect class="lbl-bg" x="800" y="595" width="36" height="20"/>
-    <text class="lbl" x="805" y="610">1 : N</text>
+    <path d="M 720,300 L 760,300" stroke="#E85D04" stroke-width="2" fill="none" marker-end="url(#arrow-end)"/>
+    <rect x="722" y="276" width="36" height="20" fill="white" stroke="#E85D04" rx="3"/>
+    <text x="727" y="291" font-family="Arial" font-size="12" font-weight="600" fill="#1A1A2E">1 : N</text>
+
+    <!-- piezas.id → pedidos.pieza_id -->
+    <path d="M 550,470 L 550,540" stroke="#E85D04" stroke-width="2" fill="none" marker-end="url(#arrow-end)"/>
+    <rect x="558" y="495" width="36" height="20" fill="white" stroke="#E85D04" rx="3"/>
+    <text x="563" y="510" font-family="Arial" font-size="12" font-weight="600" fill="#1A1A2E">1 : N</text>
+
+    <!-- desguaces.id → pedidos.desguace_id -->
+    <path d="M 180,460 C 180,500 280,540 380,580" stroke="#E85D04" stroke-width="2" fill="none" marker-end="url(#arrow-end)"/>
+    <rect x="232" y="495" width="36" height="20" fill="white" stroke="#E85D04" rx="3"/>
+    <text x="237" y="510" font-family="Arial" font-size="12" font-weight="600" fill="#1A1A2E">1 : N</text>
+
+    <!-- usuarios.id → pedidos.usuario_id -->
+    <path d="M 320,640 L 380,640" stroke="#E85D04" stroke-width="2" fill="none" marker-end="url(#arrow-end)"/>
+    <rect x="328" y="616" width="36" height="20" fill="white" stroke="#E85D04" rx="3"/>
+    <text x="333" y="631" font-family="Arial" font-size="12" font-weight="600" fill="#1A1A2E">1 : N</text>
+
+    <!-- usuarios_particulares.id → vehiculos_usuario.usuario_id -->
+    <path d="M 1240,260 L 1240,320" stroke="#E85D04" stroke-width="2" fill="none" marker-end="url(#arrow-end)"/>
+    <rect x="1248" y="278" width="36" height="20" fill="white" stroke="#E85D04" rx="3"/>
+    <text x="1253" y="293" font-family="Arial" font-size="12" font-weight="600" fill="#1A1A2E">1 : N</text>
+
+    <!-- usuarios_particulares.id → favoritos.usuario_id -->
+    <path d="M 1100,140 C 1020,140 980,260 1040,300" stroke="#E85D04" stroke-width="2" fill="none" marker-end="url(#arrow-end)"/>
+    <rect x="1000" y="200" width="36" height="20" fill="white" stroke="#E85D04" rx="3"/>
+    <text x="1005" y="215" font-family="Arial" font-size="12" font-weight="600" fill="#1A1A2E">1 : N</text>
   </svg>
 
   <!-- ── Tablas ────────────────────────────────────────── -->
@@ -219,6 +193,16 @@
     </table>
   </div>
 
+  <div class="table pos-favoritos">
+    <div class="table-header">favoritos</div>
+    <table>
+      <tr><td class="col-name"><span class="badge pk">PK</span> id</td><td class="col-type">INT AI</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span> usuario_id</td><td class="col-type">INT</td></tr>
+      <tr><td class="col-name"><span class="badge fk">FK</span> pieza_id</td><td class="col-type">INT</td></tr>
+      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
+    </table>
+  </div>
+
   <div class="table pos-usuarios-part">
     <div class="table-header">usuarios_particulares</div>
     <table>
@@ -245,12 +229,14 @@
     </table>
   </div>
 
-  <div class="table pos-favoritos">
-    <div class="table-header">favoritos</div>
+  <div class="table pos-usuarios">
+    <div class="table-header">usuarios</div>
     <table>
       <tr><td class="col-name"><span class="badge pk">PK</span> id</td><td class="col-type">INT AI</td></tr>
-      <tr><td class="col-name"><span class="badge fk">FK</span> usuario_id</td><td class="col-type">INT</td></tr>
-      <tr><td class="col-name"><span class="badge fk">FK</span> pieza_id</td><td class="col-type">INT</td></tr>
+      <tr><td class="col-name">nombre</td><td class="col-type">VARCHAR(100)</td></tr>
+      <tr><td class="col-name"><span class="badge uq">UQ</span> email</td><td class="col-type">VARCHAR(100)</td></tr>
+      <tr><td class="col-name">password</td><td class="col-type">VARCHAR(255)</td></tr>
+      <tr><td class="col-name">telefono</td><td class="col-type">VARCHAR(20)</td></tr>
       <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
     </table>
   </div>
@@ -268,24 +254,8 @@
     </table>
   </div>
 
-  <div class="table pos-usuarios">
-    <div class="table-header">usuarios</div>
-    <table>
-      <tr><td class="col-name"><span class="badge pk">PK</span> id</td><td class="col-type">INT AI</td></tr>
-      <tr><td class="col-name">nombre</td><td class="col-type">VARCHAR(100)</td></tr>
-      <tr><td class="col-name"><span class="badge uq">UQ</span> email</td><td class="col-type">VARCHAR(100)</td></tr>
-      <tr><td class="col-name">password</td><td class="col-type">VARCHAR(255)</td></tr>
-      <tr><td class="col-name">telefono</td><td class="col-type">VARCHAR(20)</td></tr>
-      <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td></tr>
-    </table>
-  </div>
-
 </div>
 </div>
-
-<p class="relations-text">
-  Las flechas indican relación 1 a N partiendo de la tabla con la PK hacia la tabla con la FK.
-</p>
 
 <footer>TodoPiezas — TFG · Desarrollo de Aplicaciones Multiplataforma</footer>
 
