@@ -4,8 +4,8 @@
 
 $path = $_GET['path'] ?? '';
 
-// Seguridad básica: solo permitir uploads/piezas/ y uploads/usuarios/
-if (!preg_match('#^uploads/(piezas|usuarios)/[A-Za-z0-9_\.-]+\.(jpg|jpeg|png|webp|gif)$#i', $path)) {
+// Seguridad básica: solo permitir uploads/piezas/, uploads/usuarios/ y uploads/vehiculos/
+if (!preg_match('#^uploads/(piezas|usuarios|vehiculos)/[A-Za-z0-9_\.-]+\.(jpg|jpeg|png|webp|gif)$#i', $path)) {
     http_response_code(400);
     exit;
 }
