@@ -22,22 +22,40 @@ class NearbyScreen extends StatefulWidget {
 class _NearbyScreenState extends State<NearbyScreen> {
   List<Desguace> _desguaces = [];
   Position? _userPos;
-  bool _loading = true;
+  bool _loading = false; // arrancar sin loading: usamos lo que tengamos
   String? _error;
   bool _panelExpanded = false;
 
   @override
   void initState() {
     super.initState();
-    // Aprovechar precarga si está disponible
+    // 1) Usar inmediatamente lo que esté en PreloadProvider (sin esperar)
     final pre = context.read<PreloadProvider>();
-    if (pre.desguacesReady && pre.positionReady) {
-      _desguaces = List.from(pre.desguaces);
-      _userPos   = pre.userPosition;
-      _applyDistance();
-      _loading = false;
-    } else {
-      _load();
+    _desguaces = List.from(pre.desguaces);
+    _userPos = pre.userPosition;
+    _applyDistance();
+
+    // 2) Si falta algo, completarlo en background sin bloquear la UI
+    if (!pre.desguacesReady || !pre.positionReady) {
+      _completeInBackground();
+    }
+  }
+
+  /// Termina la carga sin tapar el mapa con un spinner.
+  Future<void> _completeInBackground() async {
+    try {
+      final results = await Future.wait([
+        if (_desguaces.isEmpty) ApiService.getDesguaces() else Future.value(_desguaces),
+        if (_userPos == null) _getLocation() else Future.value(_userPos),
+      ]);
+      if (!mounted) return;
+      setState(() {
+        _desguaces = results[0] as List<Desguace>;
+        _userPos = results[1] as Position?;
+        _applyDistance();
+      });
+    } catch (e) {
+      if (mounted) setState(() => _error = e.toString().replaceFirst('Exception: ', ''));
     }
   }
 
