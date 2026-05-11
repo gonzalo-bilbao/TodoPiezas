@@ -80,7 +80,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     await context.read<UserProvider>().logout();
     await context.read<FavoritosProvider>().setToken(null);
     if (mounted) context.read<VehiculosProvider>().setToken(null);
-    if (mounted) Navigator.pop(context);
+    // Cerrar todas las pantallas y volver a la ventana de inicio
+    if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
   }
 
   @override
