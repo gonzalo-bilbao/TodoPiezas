@@ -209,92 +209,104 @@ class _PiezasTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final rowEven = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final rowOdd  = isDark ? const Color(0xFF252538) : Colors.grey[50];
     final textColor = isDark ? Colors.white : Colors.black87;
-    final subColor = isDark ? Colors.grey[400] : Colors.grey[600];
-    final divColor = isDark ? const Color(0xFF333344) : Colors.grey[200];
     final placeholderBg = isDark ? const Color(0xFF333344) : Colors.grey[200];
 
     return Column(
-      children: piezas.asMap().entries.map((entry) {
-        final i = entry.key;
-        final p = entry.value;
-        final imagen = p['imagen'] as String?;
-        final isNuevo = (p['estado'] ?? '') == 'Nuevo';
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Column(
+      children: [
+        // Cabecera
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          decoration: BoxDecoration(
+            color: AppTheme.secondary,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Row(
             children: [
-              Row(
-                children: [
-                  // Foto
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: SizedBox(
-                      width: 44,
-                      height: 44,
-                      child: imagen != null && imagen.isNotEmpty
-                          ? Image.network(
-                              AppConstants.imageUrl(imagen),
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(
-                                color: placeholderBg,
-                                child: const Icon(Icons.car_repair, size: 20, color: Colors.grey),
-                              ),
-                            )
-                          : Container(
-                              color: placeholderBg,
-                              child: const Icon(Icons.car_repair, size: 20, color: Colors.grey),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Nombre + estado
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          p['nombre'] ?? '',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: textColor,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '${p['estado'] ?? ''} · Stock: ${p['stock'] ?? '-'}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: isNuevo ? Colors.green[600] : subColor,
-                            fontWeight: isNuevo ? FontWeight.w600 : FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Precio
-                  Text(
-                    '${double.tryParse(p['precio'].toString())?.toStringAsFixed(0) ?? '-'} €',
-                    style: const TextStyle(
-                      color: AppTheme.primary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-              if (i < piezas.length - 1) ...[
-                const SizedBox(height: 10),
-                Divider(height: 1, color: divColor),
-              ],
+              SizedBox(width: 44),
+              Expanded(flex: 3, child: Text('Nombre', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12))),
+              Expanded(flex: 2, child: Text('Estado', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12))),
+              Expanded(flex: 2, child: Text('Precio', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12), textAlign: TextAlign.right)),
+              Expanded(flex: 1, child: Text('Stock', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12), textAlign: TextAlign.right)),
             ],
           ),
-        );
-      }).toList(),
+        ),
+        const SizedBox(height: 4),
+        ...piezas.asMap().entries.map((entry) {
+          final i = entry.key;
+          final p = entry.value;
+          final imagen = p['imagen'] as String?;
+          final isNuevo = (p['estado'] ?? '') == 'Nuevo';
+
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            decoration: BoxDecoration(
+              color: i.isEven ? rowEven : rowOdd,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Row(
+              children: [
+                // Foto
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: SizedBox(
+                    width: 36,
+                    height: 36,
+                    child: imagen != null && imagen.isNotEmpty
+                        ? Image.network(
+                            AppConstants.imageUrl(imagen),
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) =>
+                                Container(color: placeholderBg,
+                                    child: const Icon(Icons.car_repair, size: 18, color: Colors.grey)),
+                          )
+                        : Container(
+                            color: placeholderBg,
+                            child: const Icon(Icons.car_repair, size: 18, color: Colors.grey)),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 3,
+                  child: Text(p['nombre'] ?? '',
+                      style: TextStyle(fontSize: 12, color: textColor),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: isNuevo ? Colors.green[600] : AppTheme.primary,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(p['estado'] ?? '',
+                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w600),
+                        textAlign: TextAlign.center),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    '${double.tryParse(p['precio'].toString())?.toStringAsFixed(0) ?? '-'} €',
+                    style: const TextStyle(color: AppTheme.primary, fontWeight: FontWeight.bold, fontSize: 12),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text('${p['stock'] ?? '-'}',
+                      style: TextStyle(fontSize: 12, color: textColor),
+                      textAlign: TextAlign.right),
+                ),
+              ],
+            ),
+          );
+        }),
+      ],
     );
   }
 }

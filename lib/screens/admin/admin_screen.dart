@@ -9,7 +9,6 @@ import '../../providers/auth_provider.dart';
 import '../../services/api_service.dart';
 import 'profile_screen.dart';
 import 'import_excel_screen.dart';
-import '../../widgets/stats_card.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -156,15 +155,6 @@ class _AdminScreenState extends State<AdminScreen> {
                     )
                   : Column(
                       children: [
-                        // Estadísticas
-                        StatsCard(
-                          desguaceId: auth.desguaceId!,
-                          onSinStockTap: () => setState(() => _filterEstado = 'sin_stock'),
-                          onPiezasTap: () => setState(() {
-                            _filterEstado = null;
-                            _filterCategoria = null;
-                          }),
-                        ),
                         // Barra de filtros
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
